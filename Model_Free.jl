@@ -1,90 +1,113 @@
-using Random, Plots, Pkg, TreeView
+using Random, Plots
 
 ############### SET UP WORLD #########################################
 push!(LOAD_PATH, pwd())
 using CustomStructs
 
-function buildStepTask(prob::Array{Float64,1},rewards::Array{Float64,1})
+function buildStepTask(steps;MB=false)
 
-    if length(prob) == 1
+    if steps == 1
 
-        Task = DecisionTree(State(0.0,prob[1],rewards),Nothing(),Nothing())
+        Q = Actions(0.0,0.0)
+        if MB == true
+            T = Actions(0.0,0.0)
+        else
+            T = Nothing()
+        end
+        R = 0.5
+
+        Task = DecisionTree(State(Q,T,R),Nothing(),Nothing())
 
     else
 
-        Task = DecisionTree( State(0.0,prob[1],[0.0,0.0]), buildStepTask(prob[2:end],rewards), buildStepTask(prob[2:end],rewards) )
+        Q = Actions(0.0,0.0)
+        if MB == true
+            T = Actions(0.0,0.0)
+        else
+            T = Nothing()
+        end
+        R = 0
 
+        Task = DecisionTree(State(Q,T,R), buildStepTask(steps-1,MB=MB), buildStepTask(steps-1,MB=MB))
     end
 
     return Task
+
 end
 
-rewards = [1.0,0.0]
+findall(x->x==findmax(A)[1], A)
 
-prob_init = [0.7,0.7,1.0]
-
-StepTask = buildStepTask(prob_init,rewards)
-
-#@tree buildStepTask(prob_init,rewards)
-
-StepTask.state.Prob
+habit = buildStepTask(3)
+MF_model = buildStepTask(3)
+MB_model = buildStepTask(3, MB=true)
 
 ########################################################################
 
-function Qlearn(Node)
+function softMax(a, A; θ::Float64=1.0)
+    p = exp(θ*a)/sum(exp(θ*A))
+    return p
+end
 
-    γ = 0.9       # Discount Const
-    α = 1       # Confidence/Learning rate Const
-    #ϵ = 1       # Boldness/Exploration Const
+function Qlearn(Node::DecisionTree; α::Float64=1.0, branch=Nothing())
+
+    A = [Node.state.Q.A1, Node.state.Q.A1]
+
+    a_idx = findall(x->x==findmax(A)[1], A)
+
+    π = softMax(A[a_idx][1], A)
 
     if typeof(Node.A1) == Nothing || typeof(Node.A2) == Nothing
-        if Node.state.Prob > rand()
-            Node.state.Q = (1-α)*Node.state.Q + α*Node.state.reward[1]
-        else
-            Node.state.Q = (1-α)*Node.state.Q + α*Node.state.reward[2]
+
+        if π > rand() && a_idx == 1 || π < rand() && a_idx == 2
+            Node.state.Q.A1 = (1-α)*Node.state.Q.A1 + α*Node.state.R
+        elseif π > rand() && a_idx == 2 || π < rand() && a_idx == 1
+            Node.state.Q.A2 = (1-α)*Node.state.Q.A2 + α*Node.state.R
         end
 
     else
-        if Node.state.Prob > rand()
-            Node.A1 = Qlearn(Node.A1)
-        else
-            Node.A2 = Qlearn(Node.A2)
+        if π > rand() && a_idx == 1 || π < rand() && a_idx == 2
+            Node.A1 = Qlearn(Node.A1,branch=1,α=α)
+        elseif π > rand() && a_idx == 2 || π < rand() && a_idx == 1
+            Node.A2 = Qlearn(Node.A2,branch=0,α=α)
         end
-
-        Q_ = findmax([Node.A1.state.Q Node.A2.state.Q])[1]  #best next action
-
-        #Q = (1-α)*Q+α*(r+γ*Q_))     #states and actions are wrapped up in tree strut
-
-        Node.state.Q = (1-α)*Node.state.Q + α*γ*Q_
+        Q_ = findmax(A)
+        Node.state.Q = (1-α)*Node.state.Q + α*Q_
     end
 
     return Node
 
 end
 
-for i=1:500
-    MF_StepTask = Qlearn(StepTask)
-end
-
-MF_StepTask
-
-function treePlotter(Node,count)
-
-    plotArray = Array{Float64,2}(UndefInitializer(),0,2)
+function treePlotter(Node, plotArray ::Array{Float64,1})
 
     if typeof(Node.A1) == Nothing || typeof(Node.A2) == Nothing
-        prepend!(plotArray, count,Node.state.Q)
-
+        prepend!(plotArray, Node.state.Q)
     else
-        plotter(Node.A1,count+1)
-        plotter(Node.A2,count-1)
-
-        prepend!(plotArray, count,Node.state.Q)
+        plotArray = [treePlotter(Node.A1,plotArray), treePlotter(Node.A2,plotArray)]
+        prepend!(plotArray, Node.state.Q)
     end
 
     return plotArray
 end
 
-treePlotter(MF_StepTask,0)
+StepTask = buildStepTask(prob_init,rewards)
 
-scatter(treePlotter(MF_StepTask,0)[1,:],treePlotter(MF_StepTask,0)[2,:])
+#StepTask.state
+
+for i=1:10
+    MF_StepTask = Qlearn(StepTask,α=0.9)
+end
+
+MF_StepTask.state.Q
+MF_StepTask.A1.state.Q
+MF_StepTask.A2.state.Q
+MF_StepTask.A1.A1.state.Q
+MF_StepTask.A1.A2.state.Q
+MF_StepTask.A2.A1.state.Q
+MF_StepTask.A2.A2.state.Q
+
+plotArray = Array{Float64,1}([0.0])
+
+plotArray = treePlotter(MF_StepTask,plotArray)
+
+plot(plotArray)
