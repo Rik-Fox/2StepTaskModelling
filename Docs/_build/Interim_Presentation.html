@@ -1,0 +1,1001 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Q Value Time Series &#8212; Theme 0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
+div.nboutput,
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput div.prompt,
+div.nboutput div.prompt {
+    min-width: 5ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput div.input_area,
+div.nboutput div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[263]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="k">using</span> <span class="n">Random</span><span class="p">,</span> <span class="n">Plots</span><span class="p">,</span> <span class="n">Pkg</span>
+<span class="n">pyplot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[263]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Plots.PyPlotBackend()
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[264]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-green-intense-fg ansi-bold">  Updating</span> registry at `~/.julia/registries/General`
+<span class="ansi-green-intense-fg ansi-bold">  Updating</span> git-repo `https://github.com/JuliaRegistries/General.git`
+[1mFetching: [========================================&gt;]  99.9 %0.0 %=======&gt;                                 ]  17.4 %34.6 %=====================&gt;                   ]  52.0 %]  69.2 %<span class="ansi-cyan-intense-fg ansi-bold">Fetching:</span> [=============================&gt;           ]  70.5 %&gt;    ]  87.7 %<span class="ansi-cyan-intense-fg ansi-bold">Fetching:</span> [=======================================&gt; ]  95.2 %<span class="ansi-cyan-intense-fg ansi-bold">Fetching:</span> [=======================================&gt; ]  97.0 %
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+The following package names could not be resolved:
+ * virtualenv (not found in project, manifest or registry)
+Please specify by known `name=uuid`.
+
+Stacktrace:
+ [1] pkgerror(::String) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.0/Pkg/src/Types.jl:120
+ [2] #ensure_resolved#42(::Bool, ::Function, ::Pkg.Types.EnvCache, ::Array{Pkg.Types.PackageSpec,1}) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.0/Pkg/src/Types.jl:890
+ [3] #ensure_resolved at ./none:0 [inlined]
+ [4] #add_or_develop#13(::Symbol, ::Bool, ::Base.Iterators.Pairs{Union{},Union{},Tuple{},NamedTuple{(),Tuple{}}}, ::Function, ::Pkg.Types.Context, ::Array{Pkg.Types.PackageSpec,1}) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.0/Pkg/src/API.jl:59
+ [5] #add_or_develop at ./none:0 [inlined]
+ [6] #add_or_develop#12 at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.0/Pkg/src/API.jl:29 [inlined]
+ [7] #add_or_develop at ./none:0 [inlined]
+ [8] #add_or_develop#11(::Base.Iterators.Pairs{Symbol,Symbol,Tuple{Symbol},NamedTuple{(:mode,),Tuple{Symbol}}}, ::Function, ::Array{String,1}) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.0/Pkg/src/API.jl:28
+ [9] #add_or_develop at ./none:0 [inlined]
+ [10] #add_or_develop#10 at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.0/Pkg/src/API.jl:27 [inlined]
+ [11] #add_or_develop at ./none:0 [inlined]
+ [12] #add#18 at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.0/Pkg/src/API.jl:69 [inlined]
+ [13] add(::String) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.0/Pkg/src/API.jl:69
+ [14] top-level scope at In[264]:1
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span>from jupyterthemes import get_themes
+import jupyterthemes as jt
+from jupyterthemes.stylefx import set_nb_theme
+# uncomment and execute line to try a new theme
+set_nb_theme(&#39;onedork&#39;)
+# set_nb_theme(&#39;chesterish&#39;)
+# set_nb_theme(&#39;grade3&#39;)
+# set_nb_theme(&#39;oceans16&#39;)
+# set_nb_theme(&#39;solarizedl&#39;)
+# set_nb_theme(&#39;solarizedd&#39;)
+# set_nb_theme(&#39;monokai&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span>    <span class="c">#Hold Q values for each action</span>
+    <span class="n">mutable</span> <span class="n">struct</span> <span class="n">Actions</span>
+        <span class="n">A1</span>      <span class="o">::</span><span class="kt">Float64</span>
+        <span class="n">A2</span>      <span class="o">::</span><span class="kt">Float64</span>
+    <span class="k">end</span>
+
+    <span class="c"># Define a simple composite datatype to hold an Q value and the probablistic movement</span>
+    <span class="n">mutable</span> <span class="n">struct</span> <span class="n">State</span>
+        <span class="n">Q</span>       <span class="o">::</span><span class="n">Actions</span>
+        <span class="n">T</span>       <span class="o">::</span><span class="kt">Union</span><span class="p">{</span><span class="n">Actions</span><span class="p">,</span><span class="n">Nothing</span><span class="p">}</span>
+        <span class="n">R</span>       <span class="o">::</span><span class="kt">Float64</span>
+    <span class="k">end</span>
+
+    <span class="c"># Define the Tree data type for required task</span>
+    <span class="n">mutable</span> <span class="n">struct</span> <span class="n">DecisionTree</span>
+        <span class="n">state</span>   <span class="o">::</span><span class="n">State</span>
+        <span class="n">A1</span>      <span class="o">::</span><span class="kt">Union</span><span class="p">{</span><span class="n">DecisionTree</span><span class="p">,</span> <span class="kt">Float64</span><span class="p">}</span>
+        <span class="n">A2</span>      <span class="o">::</span><span class="kt">Union</span><span class="p">{</span><span class="n">DecisionTree</span><span class="p">,</span> <span class="kt">Float64</span><span class="p">}</span>
+    <span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="k">function</span> <span class="n">buildStepTask</span><span class="p">(</span><span class="n">steps</span><span class="o">::</span><span class="kt">Int</span><span class="p">;</span><span class="n">TM</span><span class="o">::</span><span class="kt">Bool</span><span class="o">=</span><span class="kc">false</span><span class="p">,</span><span class="n">branch</span><span class="o">=</span><span class="n">Nothing</span><span class="p">(),</span><span class="n">r</span><span class="o">::</span><span class="kt">Float64</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">steps</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">TM</span> <span class="o">?</span> <span class="n">T</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">Nothing</span><span class="p">()</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="kt">Task</span> <span class="o">=</span> <span class="n">DecisionTree</span><span class="p">(</span><span class="n">State</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">R</span><span class="p">),</span><span class="n">round</span><span class="p">(</span><span class="mf">0.8</span><span class="o">-</span><span class="n">r</span><span class="p">,</span><span class="n">digits</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span><span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">else</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">TM</span> <span class="o">?</span> <span class="n">T</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">Nothing</span><span class="p">()</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="kt">Task</span> <span class="o">=</span> <span class="n">DecisionTree</span><span class="p">(</span><span class="n">State</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">R</span><span class="p">),</span> <span class="n">buildStepTask</span><span class="p">(</span><span class="n">steps</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">TM</span><span class="o">=</span><span class="n">TM</span><span class="p">),</span> <span class="n">buildStepTask</span><span class="p">(</span><span class="n">steps</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">TM</span><span class="o">=</span><span class="n">TM</span><span class="p">,</span><span class="n">r</span><span class="o">=</span><span class="mf">0.6</span><span class="p">))</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="kt">Task</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">softMax</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">A</span><span class="p">;</span> <span class="n">θ</span><span class="o">::</span><span class="kt">Float64</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="n">θ</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="n">sum</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="p">(</span><span class="n">θ</span><span class="o">*</span><span class="n">A</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">p</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">rwd</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+    <span class="k">else</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>rwd (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="k">function</span> <span class="n">habitUpdate</span><span class="p">(</span><span class="n">state</span><span class="o">::</span><span class="n">String</span><span class="p">,</span><span class="n">h</span><span class="o">::</span><span class="n">Actions</span><span class="p">,</span><span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;A1&quot;</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="o">.</span><span class="n">A1</span> <span class="o">+</span> <span class="n">α</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="o">.</span><span class="n">A2</span>
+    <span class="k">elseif</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;A2&quot;</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="o">.</span><span class="n">A1</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="o">.</span><span class="n">A2</span> <span class="o">+</span> <span class="n">α</span>
+    <span class="k">else</span>
+        <span class="n">throw</span><span class="p">(</span><span class="kt">ArgumentError</span><span class="p">(</span><span class="s">&quot;First argument must be either </span><span class="se">\&quot;</span><span class="s">A1</span><span class="se">\&quot;</span><span class="s"> or </span><span class="se">\&quot;</span><span class="s">A2</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">))</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">h</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">transitionUpdate</span><span class="p">(</span><span class="n">state</span><span class="o">::</span><span class="n">String</span><span class="p">,</span><span class="n">T</span><span class="o">::</span><span class="n">Actions</span><span class="p">,</span><span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="p">;</span><span class="n">swSt</span><span class="o">::</span><span class="kt">Bool</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;A1&quot;</span>
+        <span class="n">swSt</span> <span class="o">==</span> <span class="kc">false</span> <span class="o">?</span> <span class="n">T</span><span class="o">.</span><span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span> <span class="o">+</span> <span class="n">α</span> <span class="o">:</span> <span class="n">T</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span>
+
+    <span class="k">elseif</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&quot;A2&quot;</span>
+        <span class="n">swSt</span> <span class="o">==</span> <span class="kc">false</span> <span class="o">?</span> <span class="n">T</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span> <span class="o">+</span> <span class="n">α</span> <span class="o">:</span> <span class="n">T</span><span class="o">.</span><span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span>
+    <span class="k">else</span>
+        <span class="n">throw</span><span class="p">(</span><span class="kt">ArgumentError</span><span class="p">(</span><span class="s">&quot;First argument must be either </span><span class="se">\&quot;</span><span class="s">A1</span><span class="se">\&quot;</span><span class="s"> or </span><span class="se">\&quot;</span><span class="s">A2</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">))</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">T</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">switchActn</span><span class="p">(</span><span class="n">switch</span><span class="o">::</span><span class="kt">Bool</span><span class="p">,</span> <span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="p">,</span> <span class="n">Node</span><span class="o">::</span><span class="n">DecisionTree</span><span class="p">,</span> <span class="n">switchNode</span><span class="o">::</span><span class="n">DecisionTree</span><span class="p">,</span> <span class="n">f</span><span class="o">::</span><span class="kt">Function</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">switch</span> <span class="o">==</span> <span class="kc">true</span>
+        <span class="n">Hold</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">Node</span><span class="p">)</span>
+        <span class="n">Node</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">switchNode</span><span class="p">)</span>
+        <span class="n">Node</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">α</span><span class="o">=</span><span class="n">α</span><span class="p">)</span>
+        <span class="n">Node</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">Hold</span><span class="p">)</span>
+    <span class="k">else</span>
+        <span class="n">Node</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">α</span><span class="o">=</span><span class="n">α</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">Node</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">modelledQUpdate</span><span class="p">(</span><span class="n">Node</span><span class="o">::</span><span class="n">DecisionTree</span><span class="p">,</span> <span class="n">actn</span><span class="o">::</span><span class="n">String</span><span class="p">,</span> <span class="n">r</span><span class="o">::</span><span class="kt">Float64</span><span class="p">,</span> <span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="p">;</span> <span class="n">leaf</span><span class="o">::</span><span class="kt">Bool</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span>
+
+    <span class="k">if</span>  <span class="n">leaf</span> <span class="o">==</span> <span class="kc">true</span>
+        <span class="k">if</span> <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A1&quot;</span>
+            <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">r</span>
+        <span class="k">elseif</span> <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A2&quot;</span>
+            <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">r</span>
+        <span class="k">else</span>
+            <span class="n">throw</span><span class="p">(</span><span class="kt">ArgumentError</span><span class="p">(</span><span class="s">&quot;action argument must be either </span><span class="se">\&quot;</span><span class="s">A1</span><span class="se">\&quot;</span><span class="s"> or </span><span class="se">\&quot;</span><span class="s">A2</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">))</span>
+        <span class="k">end</span>
+    <span class="k">else</span>
+
+        <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A1&quot;</span> <span class="o">?</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span> <span class="p">;</span> <span class="n">q</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">))</span> <span class="o">:</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">)</span> <span class="p">;</span> <span class="n">q</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">)</span>
+
+        <span class="n">Q_</span> <span class="o">=</span> <span class="n">p</span><span class="o">*</span><span class="n">findmax</span><span class="p">([</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span>  <span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">q</span><span class="o">*</span><span class="n">findmax</span><span class="p">([</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span>  <span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A1&quot;</span>
+            <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">Q_</span>
+        <span class="k">elseif</span> <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A2&quot;</span>
+            <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">Q_</span>
+        <span class="k">else</span>
+            <span class="n">throw</span><span class="p">(</span><span class="kt">ArgumentError</span><span class="p">(</span><span class="s">&quot;action argument must be either </span><span class="se">\&quot;</span><span class="s">A1</span><span class="se">\&quot;</span><span class="s"> or </span><span class="se">\&quot;</span><span class="s">A2</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">))</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">QUpdate</span><span class="p">(</span><span class="n">Node</span><span class="o">::</span><span class="n">DecisionTree</span><span class="p">,</span> <span class="n">actn</span><span class="o">::</span><span class="n">String</span><span class="p">,</span> <span class="n">r</span><span class="o">::</span><span class="kt">Float64</span><span class="p">,</span> <span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="p">;</span> <span class="n">leaf</span><span class="o">::</span><span class="kt">Bool</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span>
+
+    <span class="k">if</span>  <span class="n">leaf</span> <span class="o">==</span> <span class="kc">true</span>
+        <span class="k">if</span> <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A1&quot;</span>
+            <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">r</span>
+        <span class="k">elseif</span> <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A2&quot;</span>
+            <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">r</span>
+        <span class="k">else</span>
+            <span class="n">throw</span><span class="p">(</span><span class="kt">ArgumentError</span><span class="p">(</span><span class="s">&quot;action argument must be either </span><span class="se">\&quot;</span><span class="s">A1</span><span class="se">\&quot;</span><span class="s"> or </span><span class="se">\&quot;</span><span class="s">A2</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">))</span>
+        <span class="k">end</span>
+    <span class="k">else</span>
+
+        <span class="k">if</span> <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A1&quot;</span>
+            <span class="n">Q_</span> <span class="o">=</span> <span class="n">findmax</span><span class="p">([</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">Q_</span>
+        <span class="k">elseif</span> <span class="n">actn</span> <span class="o">==</span> <span class="s">&quot;A2&quot;</span>
+            <span class="n">Q_</span> <span class="o">=</span> <span class="n">findmax</span><span class="p">([</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">Q_</span>
+        <span class="k">else</span>
+            <span class="n">throw</span><span class="p">(</span><span class="kt">ArgumentError</span><span class="p">(</span><span class="s">&quot;action argument must be either </span><span class="se">\&quot;</span><span class="s">A1</span><span class="se">\&quot;</span><span class="s"> or </span><span class="se">\&quot;</span><span class="s">A2</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">))</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">Node</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>QUpdate (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="k">function</span> <span class="n">habitCtrl</span><span class="p">(</span><span class="n">Node</span><span class="o">::</span><span class="n">DecisionTree</span><span class="p">;</span> <span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">a_idx</span> <span class="o">=</span> <span class="n">findall</span><span class="p">(</span><span class="n">x</span><span class="o">-&gt;</span><span class="n">x</span><span class="o">==</span><span class="n">findmax</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="nb">π</span> <span class="o">=</span> <span class="n">softMax</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">a_idx</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)</span>
+
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">typeof</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">)</span> <span class="o">==</span> <span class="kt">Float64</span> <span class="o">||</span> <span class="n">typeof</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">)</span> <span class="o">==</span> <span class="kt">Float64</span>
+        <span class="p">((</span><span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">))</span> <span class="o">?</span> <span class="n">habitUpdate</span><span class="p">(</span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span><span class="n">α</span><span class="p">)</span> <span class="o">:</span> <span class="n">habitUpdate</span><span class="p">(</span><span class="s">&quot;A2&quot;</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+    <span class="k">else</span>
+        <span class="k">if</span> <span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">||</span> <span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="n">habitUpdate</span><span class="p">(</span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+            <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">?</span> <span class="n">sw</span><span class="o">=</span><span class="kc">false</span> <span class="o">:</span> <span class="n">sw</span><span class="o">=</span><span class="kc">true</span>
+            <span class="n">switchActn</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span><span class="n">α</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span><span class="n">habitCtrl</span><span class="p">)</span>
+        <span class="k">elseif</span> <span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">||</span> <span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">habitUpdate</span><span class="p">(</span><span class="s">&quot;A2&quot;</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+            <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">?</span> <span class="n">sw</span><span class="o">=</span><span class="kc">false</span> <span class="o">:</span> <span class="n">sw</span><span class="o">=</span><span class="kc">true</span>
+            <span class="n">switchActn</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span><span class="n">α</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span><span class="n">habitCtrl</span><span class="p">)</span>
+        <span class="k">else</span>
+            <span class="n">throw</span><span class="p">(</span><span class="kt">ArgumentError</span><span class="p">(</span><span class="s">&quot;softmax evaluation is going wrong&quot;</span><span class="p">))</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">Node</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">MFCtrl</span><span class="p">(</span><span class="n">Node</span><span class="o">::</span><span class="n">DecisionTree</span><span class="p">;</span> <span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">a_idx</span> <span class="o">=</span> <span class="n">findall</span><span class="p">(</span><span class="n">x</span><span class="o">-&gt;</span><span class="n">x</span><span class="o">==</span><span class="n">findmax</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="nb">π</span> <span class="o">=</span> <span class="n">softMax</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">a_idx</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)</span>
+
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">typeof</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">)</span> <span class="o">==</span> <span class="kt">Float64</span> <span class="o">||</span> <span class="n">typeof</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">)</span> <span class="o">==</span> <span class="kt">Float64</span>
+        <span class="p">((</span><span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">))</span> <span class="o">?</span> <span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A1&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A2&quot;</span><span class="p">)</span>
+        <span class="n">QUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">actn</span><span class="p">,</span><span class="n">rwd</span><span class="p">(</span><span class="n">r</span><span class="p">),</span><span class="n">α</span><span class="p">,</span><span class="n">leaf</span><span class="o">=</span><span class="kc">true</span><span class="p">)</span>
+    <span class="k">else</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">?</span> <span class="n">sw</span><span class="o">=</span><span class="kc">false</span> <span class="o">:</span> <span class="n">sw</span><span class="o">=</span><span class="kc">true</span>
+            <span class="n">switchActn</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span><span class="n">α</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span><span class="n">MFCtrl</span><span class="p">)</span>
+            <span class="n">QUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+        <span class="k">elseif</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">?</span> <span class="n">sw</span><span class="o">=</span><span class="kc">false</span> <span class="o">:</span> <span class="n">sw</span><span class="o">=</span><span class="kc">true</span>
+            <span class="n">switchActn</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span><span class="n">α</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span><span class="n">MFCtrl</span><span class="p">)</span>
+            <span class="n">QUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="s">&quot;A2&quot;</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+        <span class="k">else</span>
+            <span class="n">throw</span><span class="p">(</span><span class="kt">ArgumentError</span><span class="p">(</span><span class="s">&quot;softmax evaluation is going wrong&quot;</span><span class="p">))</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">Node</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">MBCtrl</span><span class="p">(</span><span class="n">Node</span><span class="o">::</span><span class="n">DecisionTree</span><span class="p">;</span> <span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">a_idx</span> <span class="o">=</span> <span class="n">findall</span><span class="p">(</span><span class="n">x</span><span class="o">-&gt;</span><span class="n">x</span><span class="o">==</span><span class="n">findmax</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="nb">π</span> <span class="o">=</span> <span class="n">softMax</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">a_idx</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)</span>
+
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">typeof</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">)</span> <span class="o">==</span> <span class="kt">Float64</span> <span class="o">||</span> <span class="n">typeof</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">)</span> <span class="o">==</span> <span class="kt">Float64</span>
+        <span class="p">((</span><span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">))</span> <span class="o">?</span> <span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A1&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A2&quot;</span><span class="p">)</span>
+        <span class="n">modelledQUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">actn</span><span class="p">,</span><span class="n">rwd</span><span class="p">(</span><span class="n">r</span><span class="p">),</span><span class="n">α</span><span class="p">,</span><span class="n">leaf</span><span class="o">=</span><span class="kc">true</span><span class="p">)</span>
+    <span class="k">else</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&gt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A1&quot;</span>
+            <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">?</span> <span class="n">sw</span><span class="o">=</span><span class="kc">false</span> <span class="o">:</span> <span class="n">sw</span><span class="o">=</span><span class="kc">true</span>
+            <span class="n">switchActn</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span><span class="n">α</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span><span class="n">MBCtrl</span><span class="p">)</span>
+            <span class="n">modelledQUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">actn</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+        <span class="k">elseif</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&gt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A2&quot;</span>
+            <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">?</span> <span class="n">sw</span><span class="o">=</span><span class="kc">false</span> <span class="o">:</span> <span class="n">sw</span><span class="o">=</span><span class="kc">true</span>
+            <span class="n">switchActn</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span><span class="n">α</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span><span class="n">MBCtrl</span><span class="p">)</span>
+            <span class="n">modelledQUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">actn</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">Node</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">GDCtrl</span><span class="p">(</span><span class="n">Node</span><span class="o">::</span><span class="n">DecisionTree</span><span class="p">;</span> <span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">αₜ</span><span class="o">::</span><span class="kt">Float64</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">a_idx</span> <span class="o">=</span> <span class="n">findall</span><span class="p">(</span><span class="n">x</span><span class="o">-&gt;</span><span class="n">x</span><span class="o">==</span><span class="n">findmax</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="nb">π</span> <span class="o">=</span> <span class="n">softMax</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">a_idx</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">)</span>
+
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">typeof</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">)</span> <span class="o">==</span> <span class="kt">Float64</span> <span class="o">||</span> <span class="n">typeof</span><span class="p">(</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">)</span> <span class="o">==</span> <span class="kt">Float64</span>
+        <span class="p">((</span><span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">))</span> <span class="o">?</span> <span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A1&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A2&quot;</span><span class="p">)</span>
+        <span class="n">transitionUpdate</span><span class="p">(</span><span class="n">actn</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">αₜ</span><span class="p">)</span>
+        <span class="n">modelledQUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">actn</span><span class="p">,</span><span class="n">rwd</span><span class="p">(</span><span class="n">r</span><span class="p">),</span><span class="n">α</span><span class="p">,</span><span class="n">leaf</span><span class="o">=</span><span class="kc">true</span><span class="p">)</span>
+    <span class="k">else</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">?</span> <span class="p">(</span><span class="n">sw</span><span class="o">=</span><span class="kc">false</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A1&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">sw</span><span class="o">=</span><span class="kc">true</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A2&quot;</span><span class="p">)</span>
+            <span class="n">switchActn</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span><span class="n">α</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span><span class="n">GDCtrl</span><span class="p">)</span>
+            <span class="n">transitionUpdate</span><span class="p">(</span><span class="n">actn</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">αₜ</span><span class="p">,</span><span class="n">swSt</span><span class="o">=</span><span class="n">sw</span><span class="p">)</span>
+            <span class="n">modelledQUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">actn</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+        <span class="k">elseif</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&gt;=</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nb">π</span> <span class="o">&lt;</span> <span class="n">rv</span> <span class="o">&amp;&amp;</span> <span class="n">a_idx</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">?</span> <span class="p">(</span><span class="n">sw</span><span class="o">=</span><span class="kc">false</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A2&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="n">sw</span><span class="o">=</span><span class="kc">true</span><span class="p">;</span><span class="n">actn</span> <span class="o">=</span> <span class="s">&quot;A1&quot;</span><span class="p">)</span>
+            <span class="n">switchActn</span><span class="p">(</span><span class="n">sw</span><span class="p">,</span><span class="n">α</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span><span class="n">GDCtrl</span><span class="p">)</span>
+            <span class="n">transitionUpdate</span><span class="p">(</span><span class="n">actn</span><span class="p">,</span><span class="n">Node</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">αₜ</span><span class="p">,</span><span class="n">swSt</span><span class="o">=</span><span class="n">sw</span><span class="p">)</span>
+            <span class="n">modelledQUpdate</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span><span class="n">actn</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="n">α</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">Node</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>GDCtrl (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="k">function</span> <span class="n">runHabit</span><span class="p">(;</span><span class="n">habit</span><span class="o">::</span><span class="n">DecisionTree</span><span class="o">=</span><span class="n">buildStepTask</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">n</span><span class="o">::</span><span class="kt">Int</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">epochHabit</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="n">n</span>
+        <span class="n">habit</span> <span class="o">=</span> <span class="n">habitCtrl</span><span class="p">(</span><span class="n">habit</span><span class="p">,</span><span class="n">α</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">epochHabit</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">habit</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">habit</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">habit</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">habit</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">habit</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">habit</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">habit</span><span class="p">,</span> <span class="n">epochHabit</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">runMF</span><span class="p">(;</span><span class="n">MF</span><span class="o">::</span><span class="n">DecisionTree</span><span class="o">=</span><span class="n">buildStepTask</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="n">n</span><span class="o">::</span><span class="kt">Int</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">epochMF</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="n">n</span>
+        <span class="n">MF</span> <span class="o">=</span> <span class="n">MFCtrl</span><span class="p">(</span><span class="n">MF</span><span class="p">,</span><span class="n">α</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">epochMF</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">MF</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MF</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">MF</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MF</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">MF</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MF</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">MF</span><span class="p">,</span> <span class="n">epochMF</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">runMB</span><span class="p">(;</span><span class="n">MB</span><span class="o">::</span><span class="n">DecisionTree</span><span class="o">=</span><span class="n">buildStepTask</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">TM</span><span class="o">=</span><span class="kc">true</span><span class="p">),</span><span class="n">n</span><span class="o">::</span><span class="kt">Int</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">TM</span><span class="o">::</span><span class="kt">AbstractArray</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.7</span> <span class="mf">0.7</span> <span class="mf">1.0</span> <span class="mf">1.0</span> <span class="mf">1.0</span> <span class="mf">1.0</span><span class="p">])</span>
+    <span class="n">MB</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span> <span class="o">=</span> <span class="n">TM</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">TM</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">TM</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">TM</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">TM</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">TM</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+    <span class="n">epochMB_Q</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">epochMB_T</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="n">n</span>
+        <span class="n">MB</span> <span class="o">=</span> <span class="n">MBCtrl</span><span class="p">(</span><span class="n">MB</span><span class="p">,</span><span class="n">α</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">epochMB_Q</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">MB</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+        <span class="n">epochMB_T</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">MB</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">MB</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">MB</span><span class="p">,</span> <span class="n">epochMB_Q</span><span class="p">,</span> <span class="n">epochMB_T</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">runGD</span><span class="p">(;</span><span class="n">GD</span><span class="o">::</span><span class="n">DecisionTree</span><span class="o">=</span><span class="n">buildStepTask</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">TM</span><span class="o">=</span><span class="kc">true</span><span class="p">),</span><span class="n">n</span><span class="o">::</span><span class="kt">Int</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">epochGD_Q</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">epochGD_T</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="n">n</span>
+        <span class="n">GD</span> <span class="o">=</span> <span class="n">GDCtrl</span><span class="p">(</span><span class="n">GD</span><span class="p">,</span><span class="n">α</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">αₜ</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">epochGD_Q</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">GD</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+        <span class="n">epochGD_T</span><span class="p">[</span><span class="o">:</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">GD</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">GD</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">]</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">GD</span><span class="p">,</span> <span class="n">epochGD_Q</span><span class="p">,</span> <span class="n">epochGD_T</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="n">runModels</span><span class="p">()</span>
+    <span class="n">habit</span> <span class="o">=</span> <span class="n">runHabit</span><span class="p">()</span>
+    <span class="n">MF</span> <span class="o">=</span> <span class="n">runMF</span><span class="p">()</span>
+    <span class="n">MB</span> <span class="o">=</span> <span class="n">runMB</span><span class="p">()</span>
+    <span class="n">GD</span> <span class="o">=</span> <span class="n">runGD</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">MF</span><span class="p">,</span> <span class="n">MB</span><span class="p">,</span> <span class="n">GD</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>runModels (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[251]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="k">function</span> <span class="n">plotSim</span><span class="p">(</span><span class="n">f</span><span class="o">::</span><span class="kt">Function</span><span class="p">;</span><span class="n">N</span><span class="o">::</span><span class="kt">Int</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">α</span><span class="o">::</span><span class="kt">Float64</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span><span class="n">ana</span><span class="o">::</span><span class="kt">Bool</span><span class="o">=</span><span class="kc">true</span><span class="p">)</span>
+
+    <span class="n">Model</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">pltT</span> <span class="o">=</span> <span class="n">Nothing</span><span class="p">()</span>
+    <span class="n">plt2</span> <span class="o">=</span> <span class="n">Nothing</span><span class="p">()</span>
+
+    <span class="n">Qv</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">$f</span><span class="s">&quot;</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;H&#39;</span> <span class="o">?</span> <span class="s">&quot;h&quot;</span> <span class="o">:</span> <span class="s">&quot;Q&quot;</span>
+
+    <span class="n">anaQ</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">:</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span>
+
+        <span class="n">anaQ</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="p">(</span><span class="mf">0.7</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mf">0.3</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">anaQ</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="p">(</span><span class="mf">0.3</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="mf">0.7</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">anaQ</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="p">(</span><span class="n">findmax</span><span class="p">([</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="n">anaQ</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="n">i</span><span class="p">]])[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">anaQ</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="p">(</span><span class="n">findmax</span><span class="p">([</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="n">anaQ</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="n">i</span><span class="p">]])[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">anaQ</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">A1</span>
+        <span class="n">anaQ</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">A2</span>
+        <span class="n">anaQ</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">A1</span>
+        <span class="n">anaQ</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">α</span><span class="p">)</span><span class="o">*</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">α</span><span class="o">*</span><span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">A2</span>
+    <span class="k">end</span>
+
+    <span class="k">if</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span> <span class="o">!=</span> <span class="nb">nothing</span>
+
+        <span class="n">pltT</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="n">ylims</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2&quot;</span><span class="p">)</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1.A1&quot;</span><span class="p">)</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">4</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1.A2&quot;</span><span class="p">)</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">5</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2.A1&quot;</span><span class="p">)</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">6</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2.A2&quot;</span><span class="p">)</span>
+        <span class="n">title!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$f</span><span class="s">&quot;</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+
+        <span class="n">xaxis!</span><span class="p">(</span><span class="s">&quot;Number of iterations&quot;</span><span class="p">)</span>
+        <span class="n">yaxis!</span><span class="p">(</span><span class="s">&quot;T(s,a,s&#39;)&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="n">ylims</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2&quot;</span><span class="p">)</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1.A1&quot;</span><span class="p">)</span>
+        <span class="c">#plot!(Model[2][4,:],label=&quot;A1.A2&quot;)</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2.A1&quot;</span><span class="p">)</span>
+        <span class="c">#plot!(Model[2][6,:],label=&quot;A2.A2&quot;)</span>
+
+        <span class="k">if</span> <span class="n">ana</span> <span class="o">==</span> <span class="kc">true</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Analytic A1&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;blue&quot;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=:</span><span class="n">dash</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Analytic A2&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;orange&quot;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=:</span><span class="n">dash</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Analytic A1.A1&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;green&quot;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=:</span><span class="n">dash</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Analytic A2.A1&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;magenta&quot;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=:</span><span class="n">dash</span><span class="p">)</span>
+        <span class="k">end</span>
+
+        <span class="n">title!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$f</span><span class="s">&quot;</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+        <span class="n">xaxis!</span><span class="p">(</span><span class="s">&quot;Number of iterations&quot;</span><span class="p">)</span>
+        <span class="n">yaxis!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$Qv</span><span class="s">(s,a)&quot;</span><span class="p">)</span>
+
+        <span class="n">plt1</span> <span class="o">=</span> <span class="n">bar</span><span class="p">([</span><span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">],</span><span class="n">legend</span><span class="o">=</span><span class="kc">false</span><span class="p">,</span><span class="n">ylims</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+        <span class="n">xaxis!</span><span class="p">(</span><span class="s">&quot;Action(s) Taken&quot;</span><span class="p">)</span>
+        <span class="n">xticks!</span><span class="p">((</span><span class="mi">1</span><span class="o">:</span><span class="mi">6</span><span class="p">),[</span><span class="s">&quot;A1&quot;</span><span class="p">,</span> <span class="s">&quot;A2&quot;</span><span class="p">,</span> <span class="s">&quot;A1.A1&quot;</span><span class="p">,</span> <span class="s">&quot;A1.A2&quot;</span><span class="p">,</span> <span class="s">&quot;A2.A1&quot;</span><span class="p">,</span> <span class="s">&quot;A2.A2&quot;</span><span class="p">])</span>
+        <span class="n">yaxis!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$Qv</span><span class="s">(s,a)&quot;</span><span class="p">)</span>
+
+        <span class="n">plt2</span> <span class="o">=</span> <span class="n">bar</span><span class="p">([</span><span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">A2</span><span class="p">],</span><span class="n">legend</span><span class="o">=</span><span class="kc">false</span><span class="p">,</span><span class="n">ylims</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+        <span class="n">title!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$f</span><span class="s">&quot;</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+        <span class="n">xaxis!</span><span class="p">(</span><span class="s">&quot;Action(s) Taken&quot;</span><span class="p">)</span>
+        <span class="n">xticks!</span><span class="p">((</span><span class="mi">1</span><span class="o">:</span><span class="mi">6</span><span class="p">),[</span><span class="s">&quot;A1&quot;</span><span class="p">,</span> <span class="s">&quot;A2&quot;</span><span class="p">,</span> <span class="s">&quot;A1.A1&quot;</span><span class="p">,</span> <span class="s">&quot;A1.A2&quot;</span><span class="p">,</span> <span class="s">&quot;A2.A1&quot;</span><span class="p">,</span> <span class="s">&quot;A2.A2&quot;</span><span class="p">])</span>
+        <span class="n">yaxis!</span><span class="p">(</span><span class="s">&quot;T(s,a,s&#39;)&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span>
+
+        <span class="n">plt</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="n">ylims</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ana</span> <span class="o">==</span> <span class="kc">true</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1.A1&quot;</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2.A1&quot;</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Analytic A1&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;blue&quot;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=:</span><span class="n">dash</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Analytic A2&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;orange&quot;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=:</span><span class="n">dash</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Analytic A1.A1&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;green&quot;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=:</span><span class="n">dash</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">anaQ</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;Analytic A2.A1&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;magenta&quot;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=:</span><span class="n">dash</span><span class="p">)</span>
+        <span class="k">else</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1.A1&quot;</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">4</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A1.A2&quot;</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2.A1&quot;</span><span class="p">)</span>
+            <span class="n">plot!</span><span class="p">(</span><span class="n">Model</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">6</span><span class="p">,</span><span class="o">:</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;A2.A2&quot;</span><span class="p">)</span>
+        <span class="k">end</span>
+
+        <span class="n">title!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$f</span><span class="s">&quot;</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+        <span class="n">xaxis!</span><span class="p">(</span><span class="s">&quot;Number of iterations&quot;</span><span class="p">)</span>
+        <span class="n">yaxis!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$Qv</span><span class="s">(s,a)&quot;</span><span class="p">)</span>
+
+        <span class="n">plt1</span> <span class="o">=</span> <span class="n">bar</span><span class="p">([</span><span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A1</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A1</span><span class="p">,</span> <span class="n">Model</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">A2</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">A2</span><span class="p">],</span><span class="n">legend</span><span class="o">=</span><span class="kc">false</span><span class="p">,</span><span class="n">ylims</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+        <span class="n">title!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$f</span><span class="s">&quot;</span><span class="p">[</span><span class="mi">4</span><span class="o">:</span><span class="k">end</span><span class="p">])</span>
+        <span class="n">xaxis!</span><span class="p">(</span><span class="s">&quot;Action(s) Taken&quot;</span><span class="p">)</span>
+        <span class="n">xticks!</span><span class="p">((</span><span class="mi">1</span><span class="o">:</span><span class="mi">6</span><span class="p">),[</span><span class="s">&quot;A1&quot;</span><span class="p">,</span> <span class="s">&quot;A2&quot;</span><span class="p">,</span> <span class="s">&quot;A1.A1&quot;</span><span class="p">,</span> <span class="s">&quot;A1.A2&quot;</span><span class="p">,</span> <span class="s">&quot;A2.A1&quot;</span><span class="p">,</span> <span class="s">&quot;A2.A2&quot;</span><span class="p">])</span>
+        <span class="n">yaxis!</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$Qv</span><span class="s">(s,a)&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">plt</span><span class="p">,</span><span class="n">pltT</span><span class="p">,</span><span class="n">plt1</span><span class="p">,</span><span class="n">plt2</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[251]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>plotSim (generic function with 1 method)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[252]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="n">theme</span><span class="p">(</span><span class="o">:</span><span class="n">ggplot2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[253]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="n">habitSimResults</span> <span class="o">=</span> <span class="n">plotSim</span><span class="p">(</span><span class="n">runHabit</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span><span class="n">ana</span><span class="o">=</span><span class="kc">false</span><span class="p">)</span>
+<span class="n">MFSimResults</span> <span class="o">=</span> <span class="n">plotSim</span><span class="p">(</span><span class="n">runMF</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">MBSimResults</span> <span class="o">=</span> <span class="n">plotSim</span><span class="p">(</span><span class="n">runMB</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">GDSimResults</span> <span class="o">=</span> <span class="n">plotSim</span><span class="p">(</span><span class="n">runGD</span><span class="p">,</span><span class="n">N</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+
+<span class="n">plth</span> <span class="o">=</span> <span class="n">habitSimResults</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pltf</span> <span class="o">=</span> <span class="n">MFSimResults</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pltb</span> <span class="o">=</span> <span class="n">MBSimResults</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pltg</span> <span class="o">=</span> <span class="n">GDSimResults</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[253]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Interim_Presentation_10_0.png" src="_images/Interim_Presentation_10_0.png" />
+</div>
+</div>
+<h2 align="center"></h2><h2 align="center"></h2><h1 align="center"><p>Reinforcement Learning Models for the Two Step Task</p>
+</h1><h2 align="center"></h2><h2 align="center"></h2><h2 align="center"><p>Richard Fox</p>
+</h2><h2 align="center"></h2><h1 align="center"><p>Overview</p>
+</h1><h2><ul>
+<li><p class="first">Two Step Task</p>
+</h2></li>
+</ul>
+<h2><ul>
+<li><p class="first">Existing Models</p>
+</h2></li>
+</ul>
+<ul><li><p>Model-Free / Q-Learning</p>
+</li><li><p>Model Based</p>
+</li><li><p>Habitual</p>
+</li></ul><h2 ><ul>
+<li><p class="first">Data Fitting</p>
+</h2></li>
+</ul>
+<ul><li><p>Data Set</p>
+</li><li><p>Maximum Likelihood Estimation</p>
+</li></ul><h2 ><ul>
+<li><p class="first">Proposed Models</p>
+</h2></li>
+</ul>
+<ul><li><p>Value Free</p>
+</li><li><p>Hierarchical RL</p>
+</li></ul><h1 align="center"><p>Two Step Task</p>
+</h1><h1 align="center"><p>Model-Free / Q-Learning</p>
+</h1><div class="math notranslate nohighlight">
+\[Q(s, a) \leftarrow Q(s, a)+\alpha\left(r(s)+\gamma \max _{a^{\prime}} Q\left(s^{\prime}, a^{\prime}\right)-Q(s, a)\right)\]</div>
+<h1 align="center"><p>Habitual</p>
+</h1><div class="math notranslate nohighlight">
+\[\begin{split}h_{\tau+1}\left(s_{\tau}, a\right)=\left\{\begin{array}{ll}\left(1-\alpha_{H}\right){h_{\tau}\left(s_{\tau}, a\right)+\alpha_{H}} &amp; { ; \quad a=a_{\tau}} \\ \left(1-\alpha_{H}\right){h_{\tau}\left(s_{\tau}, a\right)} &amp; { ; \quad a \neq a_{\tau}}\end{array}\right.\end{split}\]</div>
+<h1 align="center"><p>Model Based</p>
+</h1><div class="math notranslate nohighlight">
+\[Q(s, a) \leftarrow Q(s, a)+\alpha\left(r(s)+\gamma \sum_{s^{\prime}}T\left(s_{\tau}, a_{\tau}, s^{\prime}\right)\max_{a^{\prime}} Q\left(s^{\prime}, a^{\prime}\right)-Q(s, a)\right)\]</div>
+<h2 align="center"><p>Transition Model</p>
+</h2><div class="math notranslate nohighlight">
+\[\begin{split}T_{\tau+1}\left(s_{\tau}, a_{\tau}, s^{\prime}\right)=\left\{\begin{array}{ll}\left(1-\alpha_{T}\right){T_{\tau}\left(s_{\tau}, a_{\tau}, s^{\prime}\right)+\alpha_{T}} &amp; {;} &amp; {\mathrm{s}^{\prime}=s_{\tau+1}} \\ \left(1-\alpha_{T}\right){T_{\tau}\left(s_{\tau}, a_{\tau}, s^{\prime}\right)} &amp; { ;} &amp; {\mathrm{s}^{\prime} \neq s_{\tau+1}}\end{array}\right.\end{split}\]</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Q-Value-Time-Series">
+<h1>Q Value Time Series<a class="headerlink" href="#Q-Value-Time-Series" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[256]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plot</span><span class="p">(</span><span class="n">habitSimResults</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">MFSimResults</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">400</span><span class="p">),</span><span class="n">legend</span><span class="o">=:</span><span class="n">right</span><span class="p">,</span><span class="n">legendfontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[256]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Interim_Presentation_18_0.png" src="_images/Interim_Presentation_18_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[257]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plot</span><span class="p">(</span><span class="n">MBSimResults</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">GDSimResults</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">MBSimResults</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">GDSimResults</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">600</span><span class="p">),</span><span class="n">legend</span><span class="o">=:</span><span class="n">bottomright</span><span class="p">,</span><span class="n">legendfontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[257]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Interim_Presentation_19_0.png" src="_images/Interim_Presentation_19_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[255]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plot</span><span class="p">(</span><span class="n">habitSimResults</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">MFSimResults</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">MBSimResults</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">GDSimResults</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">600</span><span class="p">),</span><span class="n">foreground_color_text</span><span class="o">=:</span><span class="n">black</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[255]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Interim_Presentation_20_0.png" src="_images/Interim_Presentation_20_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-julia notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Interim_Presentation.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, self.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/Interim_Presentation.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

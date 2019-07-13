@@ -12,7 +12,7 @@ export Actions, State, DecisionTree
     mutable struct State
         Q       ::Actions
         T       ::Union{Actions,Nothing}
-        R  ::Float64
+        R       ::Float64
     end
 
     # Define the Tree data type for required task
