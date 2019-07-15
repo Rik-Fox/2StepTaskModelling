@@ -1,6 +1,4 @@
 using Random
-push!(LOAD_PATH, pwd())
-using MA934
 ############### SET UP WORLD #########################################
 
 moves = Dict{String,Array{Int64,1}}("left"=>[0,-1],"up"=>[-1,0],"right"=>[0,1],"down"=>[1,0])
