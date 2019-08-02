@@ -10,7 +10,6 @@ function plotSim(f::Function; data::Union{AbstractArray,Nothing}=Nothing(), ana:
     if typeof(data) != Nothing
         N = length(data[:,1])
     end
-    println(data)
     Model = f(n=N,data=data,α=α,θ=θ)
     plt_Q,bar_Q,plt_T,bar_T,plt_h,bar_h,plt_arb = Nothing(),Nothing(),Nothing(),Nothing(),Nothing(),Nothing(),Nothing()
     m = "$f"[4:end]
@@ -43,14 +42,14 @@ function plotSim(f::Function; data::Union{AbstractArray,Nothing}=Nothing(), ana:
 
         plt_Q = plot(Model[2][1,:],label="ξ.A1",color="blue",ylims = (0, 1))
         plot!(Model[2][2,:],label="ξ.A2",color="orange")
-        plot!(Model[2][3,:],label="μ.A1",color="green")
-        plot!(Model[2][4,:],label="μ.A2")
-        plot!(Model[2][5,:],label="ν.A1",color="magenta")
-        plot!(Model[2][6,:],label="ν.A2")
+        #plot!(Model[2][3,:],label="μ.A1",color="green")
+        #plot!(Model[2][4,:],label="μ.A2")
+        #plot!(Model[2][5,:],label="ν.A1",color="magenta")
+        #plot!(Model[2][6,:],label="ν.A2")
         plot!(anaQ[1,:],label="Analytic ξ.A1",color="blue",linestyle=:dash)
         plot!(anaQ[2,:],label="Analytic ξ.A2",color="orange",linestyle=:dash)
-        plot!(anaQ[3,:],label="Analytic μ.A1",color="green",linestyle=:dash)
-        plot!(anaQ[4,:],label="Analytic ν.A1",color="magenta",linestyle=:dash)
+        #plot!(anaQ[3,:],label="Analytic μ.A1",color="green",linestyle=:dash)
+        #plot!(anaQ[4,:],label="Analytic ν.A1",color="magenta",linestyle=:dash)
 
         title!("$m Time Series of Q values")
         xaxis!("Number of iterations")
@@ -108,15 +107,15 @@ function plotSim(f::Function; data::Union{AbstractArray,Nothing}=Nothing(), ana:
         yaxis!("Probability of Goal Directed Controller being chosen")
     end
 
-    return Model,plt_Q,bar_Q,plt_T,bar_T,plt_h,bar_h,plt_arb
+    return Model,plt_Q,bar_Q,plt_T,bar_T,plt_h,bar_h,plt_arb,anaQ
 end
 
-function plotData(exData::AbstractArray,exRwdProb::AbstractArray)
-    habitSimResults = plotSim(runHabit,data=exData,ana=exRwdProb,α=0.05)
-    MFSimResults = plotSim(runMF,data=exData,ana=exRwdProb,α=0.05)
-    MBSimResults = plotSim(runMB,data=exData,ana=exRwdProb,α=0.05)
-    GDSimResults = plotSim(runGD,data=exData,ana=exRwdProb,α=0.05)
-    HWVSimResults = plotSim(runHWV,data=exData,ana=exRwdProb,α=0.05)
+function plotData(exData::AbstractArray,exRwdProb::AbstractArray; α::Float64=0.5, θ::Float64=5.0)
+    habitSimResults = plotSim(runHabit,data=exData,ana=exRwdProb,α=α)
+    MFSimResults = plotSim(runMF,data=exData,ana=exRwdProb,α=α)
+    MBSimResults = plotSim(runMB,data=exData,ana=exRwdProb,α=α)
+    GDSimResults = plotSim(runGD,data=exData,ana=exRwdProb,α=α)
+    HWVSimResults = plotSim(runHWV,data=exData,ana=exRwdProb,α=α)
 
     plth = habitSimResults[2]
     pltf = MFSimResults[2]
@@ -229,21 +228,25 @@ end
 
 function modelledQUpdate(Node::DecisionTree, actn::String, μ::Union{Bool,Nothing}, α::Float64)
 
-    if Node.state.name == "ξ"
-        μ ? (p = Node.state.T.A1 ; q = 1-(Node.state.T.A1)) : (p = 1-(Node.state.T.A2) ; q = Node.state.T.A2)
-        Q_ = p*findmax([Node.μ.state.Q.A1, Node.μ.state.Q.A2])[1] + q*findmax([Node.ν.state.Q.A1,Node.ν.state.Q.A2])[1]
+    if Node.state.name == "ξ"       # if in base node Qlearn Eq is updated by Qvalue of
+                                    # state landed in as R:=0 in this state
+        actn == "A1" ? (p = Node.state.T.A1 ; q = 1-(Node.state.T.A1)) : (p = 1-(Node.state.T.A2) ; q = Node.state.T.A2)           # selecting rare and common transition Probabilities
+                Q_ = p*findmax([Node.μ.state.Q.A1, Node.μ.state.Q.A2])[1] + q*findmax([Node.ν.state.Q.A1,Node.ν.state.Q.A2])[1] # max action * T
+        if μ #actn == "A1" #μ
+            Node.state.Q.A1 = (1-α)*Node.state.Q.A1 + α*Q_
+        else
+            Node.state.Q.A2 = (1-α)*Node.state.Q.A2 + α*Q_
+        end
     elseif Node.state.name == "μ" || Node.state.name == "ν"
+
         Q_ = Node.state.R
+        if actn == "A1"
+            Node.state.Q.A1 = (1-α)*Node.state.Q.A1 + α*Q_
+        else
+            Node.state.Q.A2 = (1-α)*Node.state.Q.A2 + α*Q_
+        end
     else
         throw(error("unrecognised state"))
-    end
-
-    if actn == "A1"
-        Node.state.Q.A1 = (1-α)*Node.state.Q.A1 + α*Q_
-    elseif actn == "A2"
-        Node.state.Q.A2 = (1-α)*Node.state.Q.A2 + α*Q_
-    else
-        throw(error())
     end
 
     return Node.state.Q
@@ -293,14 +296,20 @@ function taskRead(state::String,data::AbstractArray)
     return μ, R
 end
 
-function taskCreateData(n)
+function taskCreateData(agent::DecisionTree;N::Int=150,α::Float64=0.5,θ::Float64=5.0)
+    dat = Array{Any,2}(undef,(N,4))
+    for i = 1:N
+        x = MFCtrl(agent,α=α,θ=θ)
+        dat[i,:] = [x[3][1] x[3][2] x[3][3] x[2]]
+    end
+    Data = [[d=="A1" for d in dat[:,1]] [d for d in dat[:,2]] [d=="A1" for d in dat[:,3]] [d==1.0 for d in dat[:,4]]]
 
-    π, a_idx = softMax([Node.state.h.A1, Node.state.h.A2],θ=θ)
-    rv = rand()
-    ((π >= rv && a_idx == 1) || (π < rv && a_idx == 2)) ? actn = "A1" : actn = "A2"
+    return Data
 end
 
+test = taskCreateData(agent)
 
+test[:,4]
 
 ################### Agent Controllers ##############################################################
 
@@ -350,22 +359,25 @@ function habitCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothin
         ((π >= rv && a_idx == 1) || (π < rv && a_idx == 2)) ? actn = "A1" : actn = "A2"
 
         μ, Rwd = taskEval(Node.state.name,actn)
-
+        Node.state.R = Rwd
+        Node.state.h = habitUpdate(Node.state.h,actn,α)
+        #Node.state.Q = QUpdate(Node,actn,μ,α)
         if Node.state.name == "ξ"
             μ ? habitCtrl(Node.μ,α=α) : habitCtrl(Node.ν,α=α)
+
         end
+
     else
         data[1] ? actn = "A1" : actn = "A2"
 
         μ, Rwd = taskRead(Node.state.name,data[1:2])
-
+        Node.state.R = Rwd
+        Node.state.h = habitUpdate(Node.state.h,actn,α)
+        #Node.state.Q = QUpdate(Node,actn,μ,α)
         if Node.state.name == "ξ"
             μ ? habitCtrl(Node.μ,data=data[3:4],α=α) : habitCtrl(Node.ν,data=data[3:4],α=α)
         end
     end
-    Node.state.R = Rwd
-    Node.state.h = habitUpdate(Node.state.h,actn,α)
-    Node.state.Q = QUpdate(Node,actn,μ,α)
 
     return Node, Rwd
 end
@@ -373,40 +385,49 @@ end
 function MFCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing(), α::Float64=0.5,θ::Float64=5.0)
 
     if typeof(data) == Nothing
-        π, a_idx = softMax([Node.state.h.A1, Node.state.h.A2],θ=θ)
+        π, a_idx = softMax([Node.state.Q.A1, Node.state.Q.A2],θ=θ)
         rv = rand()
         ((π >= rv && a_idx == 1) || (π < rv && a_idx == 2)) ? actn = "A1" : actn = "A2"
 
         μ, Rwd = taskEval(Node.state.name,actn)
-
+        Node.state.R = Rwd
+        Node.state.Q = QUpdate(Node,actn,μ,α)
+        dat = actn
         if Node.state.name == "ξ"
-            μ ? MFCtrl(Node.μ,α=α) : MFCtrl(Node.ν,α=α)
+            μ ? dat2=MFCtrl(Node.μ,α=α)[3] : dat2=MFCtrl(Node.ν,α=α)[3]
+            dat = actn, μ, dat2
         end
     else
         data[1] ? actn = "A1" : actn = "A2"
 
         μ, Rwd = taskRead(Node.state.name,data[1:2])
+        Node.state.R = Rwd
+        Node.state.Q = QUpdate(Node,actn,μ,α)
 
         if Node.state.name == "ξ"
             μ ? MFCtrl(Node.μ,data=data[3:4],α=α) : MFCtrl(Node.ν,data=data[3:4],α=α)
         end
+        dat=Nothing()
     end
-    Node.state.R = Rwd
-    Node.state.Q = QUpdate(Node,actn,μ,α)
 
-    return Node, Rwd
+    return Node, Rwd, dat
 end
 
 function MBCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing(), α::Float64=0.5,θ::Float64=5.0)
     if typeof(Node.state.T) == Nothing
         throw(error("Agent must have Transition modelling enabled, set kwarg \"TM=true\" when created"))
     end
+
+
+
     if typeof(data) == Nothing
         π, a_idx = softMax([Node.state.Q.A1, Node.state.Q.A2],θ=θ)
         rv = rand()
         ((π >= rv && a_idx == 1) || (π < rv && a_idx == 2)) ? actn = "A1" : actn = "A2"
 
         μ, Rwd = taskEval(Node.state.name,actn)
+        Node.state.R = Rwd
+        Node.state.Q = modelledQUpdate(Node,actn,μ,α)
 
         if Node.state.name == "ξ"
             μ ? MBCtrl(Node.μ,α=α) : MBCtrl(Node.ν,α=α)
@@ -415,27 +436,33 @@ function MBCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing()
         data[1] ? actn = "A1" : actn = "A2"
 
         μ, Rwd = taskRead(Node.state.name,data[1:2])
+        Node.state.R = Rwd
+        Node.state.Q = modelledQUpdate(Node,actn,μ,α)
 
         if Node.state.name == "ξ"
             μ ? MBCtrl(Node.μ,data=data[3:4],α=α) : MBCtrl(Node.ν,data=data[3:4],α=α)
         end
     end
-    Node.state.R = Rwd
-    Node.state.Q = modelledQUpdate(Node,actn,μ,α)
+
 
     return Node, Rwd
 end
 
-function GDCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing(), α::Float64=0.5, αₜ::Float64=0.05,θ::Float64=5.0)
+function GDCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing(), α::Float64=0.5, αₜ::Float64=0.1,θ::Float64=5.0)
     if typeof(Node.state.T) == Nothing
         throw(error("Agent must have Transition modelling enabled, set kwarg \"TM=true\" when created"))
     end
+
     if typeof(data) == Nothing
         π, a_idx = softMax([Node.state.Q.A1, Node.state.Q.A2],θ=θ)
         rv = rand()
         ((π >= rv && a_idx == 1) || (π < rv && a_idx == 2)) ? actn = "A1" : actn = "A2"
 
         μ, Rwd = taskEval(Node.state.name,actn)
+
+        Node.state.R = Rwd
+        Node.state.Q = modelledQUpdate(Node,actn,μ,α)
+
 
         if Node.state.name == "ξ"
             μ ? GDCtrl(Node.μ,α=α) : GDCtrl(Node.ν,α=α)
@@ -446,14 +473,15 @@ function GDCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing()
 
         μ, Rwd = taskRead(Node.state.name,data[1:2])
 
+        Node.state.R = Rwd
+        Node.state.Q = modelledQUpdate(Node,actn,μ,α)
+
+
         if Node.state.name == "ξ"
             μ ? GDCtrl(Node.μ,data=data[3:4],α=α) : GDCtrl(Node.ν,data=data[3:4],α=α)
         end
     end
-    Node.state.R = Rwd
-    Node.state.Q = modelledQUpdate(Node,actn,μ,α)
-    Node.state.T = transitionUpdate(Node,actn,μ,αₜ)
-
+        Node.state.T = transitionUpdate(Node,actn,μ,αₜ)
     return Node, Rwd
 end
 
@@ -581,7 +609,7 @@ end
 
 ##### data = [first_choice switch 0.0 second_choice false rwd] ####
 
-cleanData = groupby(DataFrame(CSV.File("data/Subj43.csv",delim=',')), :Flex0_or_Spec1)[1]
+cleanData = groupby(DataFrame(CSV.File("/home/rfox/Project_MSc/data/Subj43.csv",delim=',')), :Flex0_or_Spec1)[1]
 names(cleanData)
 
 exData = [t==1 for t in [cleanData.First_Choice [t==0.3 for t in cleanData.Transition_Prob] cleanData.Second_Choice cleanData.Reward]]
@@ -590,60 +618,31 @@ exRwdProb = [cleanData.p1 cleanData.p2 cleanData.p3 cleanData.p4]
 
 ########## Testing everything works
 
-plotData(exData,exRwdProb)[1]
+plotData(exData,exRwdProb,α=0.2)[3]
 
-habitSimResults = plotSim(runHabit,data=exData,ana=exRwdProb,α=0.05)
-MFSimResults = plotSim(runMF,data=exData,ana=exRwdProb,α=0.05)
-MBSimResults = plotSim(runMB,data=exData,ana=exRwdProb,α=0.05)
-GDSimResults = plotSim(runGD,data=exData,ana=exRwdProb,α=0.05)
-HWVSimResults = plotSim(runHWV,data=exData,ana=exRwdProb,α=0.05)
+habitSimResults = plotSim(runHabit,N=150,α=0.2)
+MFSimResults = plotSim(runMF,data=exData,ana=exRwdProb,α=0.2)
+MBSimResults = plotSim(runMB,data=exData,ana=exRwdProb,α=0.2)
+GDSimResults = plotSim(runGD,data=exData,ana=exRwdProb,α=0.2)
+HWVSimResults = plotSim(runHWV,data=exData,ana=exRwdProb,α=0.2)
 
-plot(habitSimResults[1][2][1,:],legend=false)
-plot!(MFSimResults[1][2][1,:])
-plot!(MBSimResults[1][2][1,:])
-plot!(GDSimResults[1][2][1,:])
-plot!(HWVSimResults[1][2][1,:])
+plot(habitSimResults[1][2][1,:],label="Habit ξ.A1")
+plot(MFSimResults[1][2][1,:],label="MF ξ.A1")
+plot!(MBSimResults[1][2][1,:],label="MB ξ.A1")
+plot!(GDSimResults[1][2][1,:],label="GD ξ.A1")
+plot!(HWVSimResults[1][2][1,:],label="HWV ξ.A1")
 
 plot!(habitSimResults[1][2][2,:])
-plot!(MFSimResults[1][2][2,:])
-plot!(MBSimResults[1][2][2,:])
+plot!(MFSimResults[1][2][2,:],label="MF ξ.A2")
+plot!(MBSimResults[1][2][2,:],label="MB ξ.A2")
 plot!(GDSimResults[1][2][2,:])
 plot!(HWVSimResults[1][2][2,:])
 
-plot!(habitSimResults[1][2][3,:])
-plot!(MFSimResults[1][2][3,:])
-plot!(MBSimResults[1][2][3,:])
-plot!(GDSimResults[1][2][3,:])
-plot!(HWVSimResults[1][2][3,:])
+plot!(MFSimResults[9][1,:],label="Analytic ξ.A1",color="blue",linestyle=:dash)
+plot!(MFSimResults[9][2,:],label="Analytic ξ.A2",color="orange",linestyle=:dash)
 
-plot!(habitSimResults[1][2][4,:])
-plot!(MFSimResults[1][2][4,:])
-plot!(MBSimResults[1][2][4,:])
-plot!(GDSimResults[1][2][4,:])
-plot!(HWVSimResults[1][2][4,:])
+title!("Switching action update all models Example")
+ylabel!("Q(s,a)")
+xlabel!("Number of Iterations / Time")
 
-plot!(habitSimResults[1][2][5,:])
-plot!(MFSimResults[1][2][5,:])
-plot!(MBSimResults[1][2][5,:])
-plot!(GDSimResults[1][2][5,:])
-plot!(HWVSimResults[1][2][5,:])
-
-plot!(habitSimResults[1][2][6,:])
-plot!(MFSimResults[1][2][6,:])
-plot!(MBSimResults[1][2][6,:])
-plot!(GDSimResults[1][2][6,:])
-plot!(HWVSimResults[1][2][6,:])
-
-### Habit comparisiion ###
-plot(habitSimResults[1][4][1,:],color=:red)
-plot!(HWVSimResults[1][4][1,:],color=:red)
-plot!(habitSimResults[1][4][2,:],color=:blue)
-plot!(HWVSimResults[1][4][2,:],color=:blue)
-plot!(habitSimResults[1][4][3,:],color=:green)
-plot!(HWVSimResults[1][4][3,:],color=:green)
-plot!(habitSimResults[1][4][4,:],color=:yellow)
-plot!(HWVSimResults[1][4][4,:],color=:yellow)
-plot!(habitSimResults[1][4][5,:],color=:purple)
-plot!(HWVSimResults[1][4][5,:],color=:purple)
-plot!(habitSimResults[1][4][6,:],color=:magenta)
-plot!(HWVSimResults[1][4][6,:],color=:magenta)
+savefig("ActionSwitchAllModelsA1.png")

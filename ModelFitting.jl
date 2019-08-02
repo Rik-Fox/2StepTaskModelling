@@ -3,7 +3,7 @@ using Random, Plots, StepTaskModelling, CSV, DataFrames, Pkg
 pyplot()
 
 # DataFrame(skipmissing(CSV.File("Events2.csv",delim=','; missingstrings=["", "NA"])))
-rawData = DataFrame(CSV.File("data/Subj3.csv",delim=','))
+rawData = DataFrame(CSV.File("/home/rfox/Project_MSc/data/Subj3.csv",delim=','))
 
 cleanData = groupby(rawData,:Flex0_or_Spec1)[1]
 names(cleanData)
