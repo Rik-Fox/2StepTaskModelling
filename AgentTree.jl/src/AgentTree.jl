@@ -1,4 +1,4 @@
-module CustomStructs
+module AgentTree
 
 export Actions, State, DecisionTree, buildAgent
 

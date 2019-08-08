@@ -1,7 +1,7 @@
 using Random, Plots, CSV, DataFrames
 pyplot()
 push!(LOAD_PATH, pwd())
-using CustomStructs
+using AgentTree
 
 #agent = buildAgent(2,TM=true,hm=true)
 
@@ -307,9 +307,9 @@ function taskCreateData(agent::DecisionTree;N::Int=150,α::Float64=0.5,θ::Float
     return Data
 end
 
-test = taskCreateData(agent)
-
-test[:,4]
+# test = taskCreateData(agent)
+#
+# test[:,4]
 
 ################### Agent Controllers ##############################################################
 
@@ -605,44 +605,3 @@ function runHWV(; agent::DecisionTree=buildAgent(2,TM=true,hm=true), data::Union
 
     return agent, epoch_Q, epoch_T, epoch_H, P𝑮
 end
-
-
-##### data = [first_choice switch 0.0 second_choice false rwd] ####
-
-cleanData = groupby(DataFrame(CSV.File("/home/rfox/Project_MSc/data/Subj43.csv",delim=',')), :Flex0_or_Spec1)[1]
-names(cleanData)
-
-exData = [t==1 for t in [cleanData.First_Choice [t==0.3 for t in cleanData.Transition_Prob] cleanData.Second_Choice cleanData.Reward]]
-
-exRwdProb = [cleanData.p1 cleanData.p2 cleanData.p3 cleanData.p4]
-
-########## Testing everything works
-
-plotData(exData,exRwdProb,α=0.2)[3]
-
-habitSimResults = plotSim(runHabit,N=150,α=0.2)
-MFSimResults = plotSim(runMF,data=exData,ana=exRwdProb,α=0.2)
-MBSimResults = plotSim(runMB,data=exData,ana=exRwdProb,α=0.2)
-GDSimResults = plotSim(runGD,data=exData,ana=exRwdProb,α=0.2)
-HWVSimResults = plotSim(runHWV,data=exData,ana=exRwdProb,α=0.2)
-
-plot(habitSimResults[1][2][1,:],label="Habit ξ.A1")
-plot(MFSimResults[1][2][1,:],label="MF ξ.A1")
-plot!(MBSimResults[1][2][1,:],label="MB ξ.A1")
-plot!(GDSimResults[1][2][1,:],label="GD ξ.A1")
-plot!(HWVSimResults[1][2][1,:],label="HWV ξ.A1")
-
-plot!(habitSimResults[1][2][2,:])
-plot!(MFSimResults[1][2][2,:],label="MF ξ.A2")
-plot!(MBSimResults[1][2][2,:],label="MB ξ.A2")
-plot!(GDSimResults[1][2][2,:])
-plot!(HWVSimResults[1][2][2,:])
-
-plot!(MFSimResults[9][1,:],label="Analytic ξ.A1",color="blue",linestyle=:dash)
-plot!(MFSimResults[9][2,:],label="Analytic ξ.A2",color="orange",linestyle=:dash)
-
-title!("Switching action update all models Example")
-ylabel!("Q(s,a)")
-xlabel!("Number of Iterations / Time")
-
-savefig("ActionSwitchAllModelsA1.png")
