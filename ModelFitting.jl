@@ -5,12 +5,6 @@ using StepTaskModelling
 theme(:wong)
 pyplot()
 
-cleanData = groupby(DataFrame(CSV.File("/home/rfox/Project_MSc/data/Subj43.csv",delim=',')), :Flex0_or_Spec1)[1]
-
-exData = [t==1 for t in [cleanData.First_Choice [t==0.3 for t in cleanData.Transition_Prob] cleanData.Second_Choice cleanData.Reward]]
-
-testData = taskCreateData(MFCtrl,α=0.6,θ=3.0)
-
 function LogLikeli(L,modelFit,data)
     p = modelFit[2],modelFit[3]
     for i=1:length(p[1])
@@ -22,7 +16,7 @@ function LogLikeli(L,modelFit,data)
         if data[i,3]
             L += log(p[2][i])
         else
-            L += log(1-p[2][i])
+            L += log(1p[2][i])
         end
     end
     return L
@@ -44,16 +38,22 @@ function MLE(f::Function, data; trial_α=collect(0.0:1/99:1.0), trial_θ=collect
     return L, Post
 end
 
-model = runMF(data=testData)
-plt = plotSim(runMB,data=exData)
-plt[3]
+# model = runMF(data=testData,α=0.9,θ=10.0)
+# plt = plotSim(runMF,data=exData)
+# plt[3]
 
-trial_α=collect(0.05:1/99:1)
-trial_θ=collect(1:10/99:10)
+# cleanData = groupby(DataFrame(CSV.File("/home/rfox/Project_MSc/data/Subj43.csv",delim=',')), :Flex0_or_Spec1)[1]
+#
+# exData = [t==1 for t in [cleanData.First_Choice [t==0.3 for t in cleanData.Transition_Prob] cleanData.Second_Choice cleanData.Reward]]
+θ=20.0
+
+testData = taskCreateData(MFCtrl,α=0.5,θ=θ)
+x = runMF(data=testData)
+trial_α=collect(0.0:1/99:1)
+trial_θ=collect(0:25/99:25)
 #prior = ones(length(trial_α))*pdf(Normal(3,1),trial_θ)'
 prior = ones(length(trial_α),length(trial_θ))
-L, Post = MLE(runMF,testData,prior=prior, trial_α=collect(0.05:1/99:1),trial_θ=collect(1:10/99:10))
-
+L, Post = MLE(runMF,testData,prior=prior, trial_α=trial_α,trial_θ=trial_θ)
 heatmap(trial_θ,trial_α,Post)
 surface(trial_θ,trial_α,Post)
 
@@ -62,3 +62,15 @@ ind = findmax(Post)
 
 plot(plot(trial_α,Post[:,ind[2][2]]),plot(trial_θ,Post[ind[2][1],:]),layout=(2,1))
 #vline!([μ_hat])
+
+plot!(trial_α,Post[:,ind[2][2]],label="θ=$θ")
+plot!(trial_θ,Post[ind[2][1],:],label="θ=$θ")
+
+θ=1.0
+testData = taskCreateData(MFCtrl,α=0.5,θ=θ)
+trial_α=collect(0.0:1/99:1)
+trial_θ=collect(0:25/99:25)
+prior = ones(length(trial_α),length(trial_θ))
+L, Post = MLE(runMF,testData,prior=prior, trial_α=trial_α,trial_θ=trial_θ)
+ind = findmax(Post)
+plot!(trial_θ,Post[ind[2][1],:],label="θ=$θ")

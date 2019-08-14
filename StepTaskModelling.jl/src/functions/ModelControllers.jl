@@ -1,4 +1,4 @@
-SCimport Random
+import Random
 
 function habitFlatCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing(), θ::Float64=5.0)
 

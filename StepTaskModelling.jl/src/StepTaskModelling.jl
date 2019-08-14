@@ -7,16 +7,16 @@ export Actions, State, DecisionTree, buildAgent
 export softMax, taskCreateData
 
 #Hold values for each action
-mutable struct Actions
-A1      ::Float64
-A2      ::Float64
+mutable struct Actions{T<:AbstractFloat}
+A1      ::T
+A2      ::T
 end
 # Define a simple composite datatype to hold an Q value and the probablistic movement
 mutable struct State
 name    ::String
 Q       ::Actions
-T       ::Union{Actions,Nothing}
-h       ::Union{Actions,Nothing}
+T       ::Union{Float64,Nothing}
+h       ::Union{Float64,Nothing}
 R       ::Float64
 end
 
@@ -26,6 +26,8 @@ state   ::State
 μ      ::Union{DecisionTree, Nothing}
 ν      ::Union{DecisionTree, Nothing}
 end
+
+abstract type Actions{T} <: State end
 
 ############ Create Agent ###############################################
 
