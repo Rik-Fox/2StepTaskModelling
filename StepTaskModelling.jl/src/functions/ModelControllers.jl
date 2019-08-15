@@ -1,41 +1,71 @@
 import Random
 
-function habitFlatCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing(), θ::Float64=5.0)
+# function habitFlatCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing(), θ::Float64=5.0)
+#
+#     if typeof(Node.state.h) == Nothing
+#         throw(error("Agent must have habitual modelling enabled, set kwarg \"hm=true\" when created"))
+#     end
+#
+#     α=1.0
+#     if typeof(data) == Nothing
+#         π, a_idx = softMax([Node.state.h.A1, Node.state.h.A2],θ=θ)
+#         rv = rand()
+#         ((π >= rv && a_idx == 1) || (π < rv && a_idx == 2)) ? actn = "A1" : actn = "A2"
+#
+#         μ, Rwd = taskEval(Node.state.name,actn)
+#
+#         if Node.state.name == "ξ"
+#             μ ? habitCtrl(Node.μ,α=α) : habitCtrl(Node.ν,α=α)
+#         end
+#     else
+#         data[1] ? actn = "A1" : actn = "A2"
+#
+#         μ, Rwd = taskRead(Node.state.name,data[1:2])
+#
+#         if Node.state.name == "ξ"
+#             μ ? habitCtrl(Node.μ,data=data[3:4],α=α) : habitCtrl(Node.ν,data=data[3:4],α=α)
+#         end
+#     end
+#
+#     Node.state.R = Rwd
+#     Node.state.h = habitUpdate(Node.state.h,actn,α)
+#     Node.state.Q = QUpdate(Node,actn,μ,α)
+#
+#     return Node, Rwd
+# end
 
-    if typeof(Node.state.h) == Nothing
-        throw(error("Agent must have habitual modelling enabled, set kwarg \"hm=true\" when created"))
-    end
 
-    α=1.0
-    if typeof(data) == Nothing
-        π, a_idx = softMax([Node.state.h.A1, Node.state.h.A2],θ=θ)
-        rv = rand()
-        ((π >= rv && a_idx == 1) || (π < rv && a_idx == 2)) ? actn = "A1" : actn = "A2"
+function activeCtrller(Node::DecisionTree{State{String, T2, T2, T1, T}}; α::T=0.5,θ::T=5.0) where {T<:AbstractFloat, T1<:Actions, T2<:Nothing}
+    π = softMax([Node.state.h.A1, Node.state.h.A2],θ=θ)
+    π >= rand() ? actn = "A1" : actn = "A2"
 
-        μ, Rwd = taskEval(Node.state.name,actn)
-
-        if Node.state.name == "ξ"
-            μ ? habitCtrl(Node.μ,α=α) : habitCtrl(Node.ν,α=α)
-        end
-    else
-        data[1] ? actn = "A1" : actn = "A2"
-
-        μ, Rwd = taskRead(Node.state.name,data[1:2])
-
-        if Node.state.name == "ξ"
-            μ ? habitCtrl(Node.μ,data=data[3:4],α=α) : habitCtrl(Node.ν,data=data[3:4],α=α)
-        end
-    end
-
+    μ, Rwd = taskEval(Node.state.name,actn)
     Node.state.R = Rwd
     Node.state.h = habitUpdate(Node.state.h,actn,α)
-    Node.state.Q = QUpdate(Node,actn,μ,α)
-
-    return Node, Rwd
+    if Node.state.name == "ξ"
+        μ ? SC=activeCtrller(Node.μ,α=α,θ=θ) : SC=activeCtrller(Node.ν,α=α,θ=θ)
+        Rwd = SC[2]
+        actn = actn, μ, SC[3], SC[4]
+    end
+    return Node, Rwd, actn, π
 end
 
-function habitCtrl(Node::DecisionTree; data::Union{AbstractArray,Nothing}=Nothing(), α::Float64=0.5,θ::Float64=5.0)
+function activeCtrller(Node::DecisionTree{State{String, T2, T2, T1, T}}, data::Array{Bool,1}; α::T=0.5,θ::T=5.0) where {T<:AbstractFloat, T1<:Actions, T2<:Nothing}
 
+    π = softMax([Node.state.h.A1, Node.state.h.A2],θ=θ)
+    data[1] ? actn = "A1" : actn = "A2"
+
+    μ, Rwd = taskEval(Node.state.name,actn)
+    Node.state.R = Rwd
+    Node.state.h = habitUpdate(Node.state.h,actn,α)
+    if Node.state.name == "ξ"
+        μ ? SC=activeCtrller(Node.μ,data[3:4],α=α,θ=θ) : SC=activeCtrller(Node.ν,data[3:4],α=α,θ=θ)
+        Rwd = SC[2]
+        actn = actn, μ, SC[3], SC[4]
+    end
+    return Node, Rwd, actn, π
+end
+function habitCtrl(Node::DecisionTree; data::AbstractArray, α::Float64=0.5,θ::Float64=5.0)
     if typeof(Node.state.h) == Nothing
         throw(error("Agent must have habitual modelling enabled, set kwarg \"hm=true\" when created"))
     end

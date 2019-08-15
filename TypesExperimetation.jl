@@ -4,14 +4,24 @@ push!(LOAD_PATH, pwd())
 
 using MyTypes
 
-agent = buildAgent(2)
+agent = buildAgent(2,Qvalue=false,habit=true)
 
+Ctrl(agent)
+
+agent.state.Q.A1 = 6
+agent.state.R = 12
+agent
 typeof(Actions)
 typeof(State)
 typeof(DecisionTree)
 
-Float64 <: Actions
 
-Actions <: State
+a = Nothing()
 
-Actions{Float64} <: State{Float64}
+c=[1 2 3 4]
+
+c
+
+d=c[3:4]
+
+c == d

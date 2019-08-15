@@ -16,7 +16,7 @@ function taskEval(state::String,actn::String)
     return μ, R
 end
 
-function taskRead(state::String,data::AbstractArray)
+function taskRead(state::String,data::Array{Bool,1})
     if state == "ξ"
         data[1] ? (data[2] ? μ = false : μ = true) : (data[2] ? μ = true : μ = false)
         R = 0.0
@@ -28,7 +28,7 @@ function taskRead(state::String,data::AbstractArray)
     return μ, R
 end
 
-function taskCreateData(f::Function;agent::DecisionTree=buildAgent(2,TM=true,hm=true),N::Int=1000,α::Float64=0.5,θ::Float64=5.0)
+function taskCreateData(f::Function;agent::DecisionTree=buildAgent(2),N::Int=1000,α::Float64=0.5,θ::Float64=5.0)
     dat = Array{Any,2}(undef,(N,4))
     for i = 1:N
         x = f(agent,α=α,θ=θ)

@@ -1,10 +1,7 @@
-module StepTaskModelling
-
-export habitCtrl, MFCtrl, MBCtrl, GDCtrl, HWVCtrl
-export plotSim, plotAll
-export softMax, taskCreateData
-
-export Actions, State, DecisionTree, buildAgent, activeCtrller, runSim
+module AgentTreeModels
+export Actions, State, DecisionTree, buildAgent
+export agentCtrller, runSim, createData, agentUpdate
+export MLE
 
 #Hold values for each action
 mutable struct Actions{T<:AbstractFloat}
@@ -57,10 +54,13 @@ function rwd(p)
         return 0.0
     end
 end
-
-include(joinpath("functions", "ModelControllers.jl"))
-include(joinpath("functions", "ModelRunners.jl"))
-include(joinpath("functions", "ModelUpdates.jl"))
-include(joinpath("functions", "ModelPlotting.jl"))
-include(joinpath("functions", "ModelEnvironments.jl"))
+include(joinpath("functions", "agentUpdate.jl"))
+include(joinpath("functions", "agentCtrller.jl"))
+include(joinpath("functions", "transitionUpdate.jl"))
+include(joinpath("functions", "askEnviron.jl"))
+include(joinpath("functions", "createData.jl"))
+include(joinpath("functions", "runSim.jl"))
+include(joinpath("functions", "runSim_mixed.jl"))
+include(joinpath("functions", "logLikeli.jl"))
+include(joinpath("functions", "MLE.jl"))
 end

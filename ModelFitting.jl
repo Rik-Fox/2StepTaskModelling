@@ -1,76 +1,59 @@
-using Random, Plots, Revise, CSV, DataFrames
-using Distributions
+using Plots, Revise, CSV, DataFrames
 push!(LOAD_PATH, pwd())
-using StepTaskModelling
+using AgentTreeModels
 theme(:wong)
 pyplot()
 
-function LogLikeli(L,modelFit,data)
-    p = modelFit[2],modelFit[3]
-    for i=1:length(p[1])
-        if data[i,1]
-            L += log(p[1][i])
-        else
-            L += log(1-p[1][i])
-        end
-        if data[i,3]
-            L += log(p[2][i])
-        else
-            L += log(1p[2][i])
-        end
+function TEST()
+    plt = plot()
+    thetas = collect{Float64}(1:1:25)
+    runtimes = zeros(length(thetas))
+    peak = zeros(length(thetas))
+    for i=1:length(thetas)
+        agent = buildAgent(2,Qvalue=false,habit=true)
+        θ = thetas[i]
+        testData = createData(agent,α=0.5,θ=θ)
+
+        Esti = @timed MLE(agent,testData)
+        Post = Esti[1]
+        runtimes[i] = Esti[2]
+
+        ind = findmax(Post)
+        peak[i] = ind[2][1]
+        plot!(collect(0:25/99:25),Post[ind[2][1],:],label="θ=$θ")
     end
-    return L
+    return plt, runtimes, peak
 end
+x, y =Nothing(), Nothing()
+x, y, peaks = TEST()
 
-function MLE(f::Function, data; trial_α=collect(0.0:1/99:1.0), trial_θ=collect(0:10/99:10), prior=ones(length(trial_α),length(trial_θ)))
+plot(peaks)
+savefig(x,"thetaRange.png")
+print(sum(y)/length(y))
+plot(x)
 
-    L = zeros(length(trial_α),length(trial_θ))
-
-    for i = 1:length(trial_α)
-        for j = 1:length(trial_θ)
-            model = f(data=data,α=trial_α[i],θ=trial_θ[j])
-            L[i,j] = LogLikeli(L[i,j],model[2],data)
-        end
-    end
-    Post = exp.(L .* prior)
-    Post = Post/sum(Post)
-
-    return L, Post
-end
-
-# model = runMF(data=testData,α=0.9,θ=10.0)
-# plt = plotSim(runMF,data=exData)
-# plt[3]
-
-# cleanData = groupby(DataFrame(CSV.File("/home/rfox/Project_MSc/data/Subj43.csv",delim=',')), :Flex0_or_Spec1)[1]
+# agent = buildAgent(2)
 #
+# cleanData = groupby(DataFrame(CSV.File("/home/rfox/Project_MSc/data/Subj43.csv",delim=',')), :Flex0_or_Spec1)[1]
 # exData = [t==1 for t in [cleanData.First_Choice [t==0.3 for t in cleanData.Transition_Prob] cleanData.Second_Choice cleanData.Reward]]
-θ=20.0
-
-testData = taskCreateData(MFCtrl,α=0.5,θ=θ)
-x = runMF(data=testData)
-trial_α=collect(0.0:1/99:1)
-trial_θ=collect(0:25/99:25)
-#prior = ones(length(trial_α))*pdf(Normal(3,1),trial_θ)'
-prior = ones(length(trial_α),length(trial_θ))
-L, Post = MLE(runMF,testData,prior=prior, trial_α=trial_α,trial_θ=trial_θ)
-heatmap(trial_θ,trial_α,Post)
-surface(trial_θ,trial_α,Post)
-
-#Marginals
-ind = findmax(Post)
-
-plot(plot(trial_α,Post[:,ind[2][2]]),plot(trial_θ,Post[ind[2][1],:]),layout=(2,1))
-#vline!([μ_hat])
-
-plot!(trial_α,Post[:,ind[2][2]],label="θ=$θ")
-plot!(trial_θ,Post[ind[2][1],:],label="θ=$θ")
-
-θ=1.0
-testData = taskCreateData(MFCtrl,α=0.5,θ=θ)
-trial_α=collect(0.0:1/99:1)
-trial_θ=collect(0:25/99:25)
-prior = ones(length(trial_α),length(trial_θ))
-L, Post = MLE(runMF,testData,prior=prior, trial_α=trial_α,trial_θ=trial_θ)
-ind = findmax(Post)
-plot!(trial_θ,Post[ind[2][1],:],label="θ=$θ")
+# testData = createData(agent,α=0.5,θ=5.0)
+#
+# # ### param ranges
+# trial_α=collect(0.0:1/99:1)
+# trial_θ=collect(0:10/99:10)
+# #
+# # ### prior
+# # #using Distributions
+# # #prior = ones(length(trial_α))*pdf(Normal(3,1),trial_θ)'
+# # prior = ones(length(trial_α),length(trial_θ))
+#
+# plt = plot()
+# plot!(trial_θ,Post[ind[2][1],:])
+#
+# L, Post = MLE(agent,testData)
+# #heatmap(trial_θ,trial_α,Post)
+# #surface(trial_θ,trial_α,Post)
+#
+# #Marginals
+# ind = findmax(Post)
+# #plot(plot(trial_α,Post[:,ind[2][2]]),plot(trial_θ,Post[ind[2][1],:]),layout=(2,1))
