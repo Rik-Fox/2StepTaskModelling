@@ -21,7 +21,7 @@ function askEnviron(state::String, data::Array{Bool,1})
         R = 0.0
     else
         μ = Nothing()
-        R = Int(data[2])
+        R = Float64(data[2])
     end
 
     return μ, R

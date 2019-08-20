@@ -1,20 +1,12 @@
 # starting state
 function transitionUpdate(T::Actions, actn::String, μ::Bool, α::Float64 )
     if μ
-        if actn == "A1"
-            Node.state.T.A1 = (1-α)*Node.state.T.A1 + α
-        else
-            Node.state.T.A2 = (1-α)*Node.state.T.A2
-        end
+        actn == "A1" ? T.A1 = (1-α)*T.A1 + α : T.A2 = (1-α)*T.A2
     else
-        if actn == "A1"
-            Node.state.T.A1 = (1-α)*Node.state.T.A1
-        else
-            Node.state.T.A2 = (1-α)*Node.state.T.A2 + α
-        end
+        actn == "A1" ? T.A1 = (1-α)*T.A1 : T.A2 = (1-α)*T.A2 + α
     end
 
-    return Node.state.T
+    return T
 end
 
 # secondary states
