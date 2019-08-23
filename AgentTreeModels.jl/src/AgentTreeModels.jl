@@ -3,7 +3,8 @@ export Actions, State, DecisionTree, buildAgent
 export agentCtrller, agentCtrller_mixed
 export runSim, runSim_mixed
 export createData, createData_mixed
-export MLE
+export MLE, MLE_mixed
+export plotSim
 
 #Hold values for each action
 mutable struct Actions{T<:AbstractFloat}
@@ -18,6 +19,7 @@ Q       ::T2
 T       ::T3
 h       ::T4
 R       ::T5
+e       ::T5
 end
 
 # Define the Tree data type for required task
@@ -34,9 +36,9 @@ function buildAgent(steps::Int64; Qvalue::Bool=true, Trans::Bool=false, habit::B
     habit ? h = Actions(0.0,0.0) : h = Nothing()
     if steps == 1
         RH ? name = "ν" : name = "μ"
-        Agent = DecisionTree( State(name,Q,T,h,Actions(0.0,0.0)),Nothing(),Nothing())
+        Agent = DecisionTree( State(name,Q,T,h,Actions(0.0,0.0),Actions(0.0,0.0)),Nothing(),Nothing())
     else
-        Agent = DecisionTree( State("ξ",Q,T,h,Actions(0.0,0.0)), buildAgent(steps-1, Qvalue=Qvalue, Trans=Trans, habit=habit), buildAgent(steps-1, Qvalue=Qvalue, Trans=Trans, habit=habit, RH=true) )
+        Agent = DecisionTree( State("ξ",Q,T,h,Actions(0.0,0.0),Actions(0.0,0.0)), buildAgent(steps-1, Qvalue=Qvalue, Trans=Trans, habit=habit), buildAgent(steps-1, Qvalue=Qvalue, Trans=Trans, habit=habit, RH=true) )
     end
 
     return Agent
@@ -48,9 +50,9 @@ function Δ(A::Actions,B::Actions)
     return abs((A.A1-B.A1)+(A.A1-B.A1))
 end
 
-function softMax(A::AbstractArray; θ::Float64=5.0)
+function softMax(A::AbstractArray; β::Float64=5.0)
     a = A[1]
-    p = exp(θ*a)/sum(exp.(θ*A))
+    p = exp(β*a)/sum(exp.(β*A))
     return p
 end
 
@@ -66,6 +68,9 @@ include(joinpath("functions", "agentCtrller.jl"))
 include(joinpath("functions", "agentUpdate_mixed.jl"))
 include(joinpath("functions", "agentCtrller_mixed.jl"))
 include(joinpath("functions", "transitionUpdate.jl"))
+include(joinpath("functions", "replacetraceUpdate.jl"))
+include(joinpath("functions", "rwdUpdate.jl"))
+include(joinpath("functions", "habitUpdate.jl"))
 include(joinpath("functions", "askEnviron.jl"))
 include(joinpath("functions", "createData.jl"))
 include(joinpath("functions", "createData_mixed.jl"))
@@ -73,4 +78,5 @@ include(joinpath("functions", "runSim.jl"))
 include(joinpath("functions", "runSim_mixed.jl"))
 include(joinpath("functions", "logLikeli.jl"))
 include(joinpath("functions", "MLE.jl"))
+include(joinpath("functions", "plotSim.jl"))
 end
