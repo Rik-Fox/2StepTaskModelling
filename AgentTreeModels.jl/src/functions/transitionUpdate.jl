@@ -10,7 +10,7 @@ function transitionUpdate(T::Actions, actn::String, μ::Bool, α::Float64 )
 end
 
 # secondary states
-function transitionUpdate(T::Actions, actn::String, μ::Nothing, α::Float64 )
+function transitionUpdate(T::Actions, actn::String, α::Float64 )
     if actn == "A1"
         T.A1 = (1-α)*T.A1 + α
     elseif actn == "A2"

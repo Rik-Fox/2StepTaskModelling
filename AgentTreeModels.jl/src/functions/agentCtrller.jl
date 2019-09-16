@@ -2,109 +2,361 @@ import Random
 
 ############# ASK THE ENVIRON ###############
 
-## model free
+#### DAW
+function agentCtrller(agent::DecisionTree, α::T, β1::T, β2::T, λ::T, ηₜ::T, ηᵣ::T) where T <: Float64
 
-function agentCtrller(agent::DecisionTree; α::T=0.5, β::T=5.0) where T<:Float64
+    agent_C = deepcopy(agent)
+    agent_TV = deepcopy(agent)
 
-    π = softMax([agent.state.Q.A1, agent.state.Q.A2],β=β)
-    π >= rand() ? actn = "A1" : actn = "A2"
-
-    μ, Rwd = askEnviron(agent.state.name,actn)
-    agent.state = agentUpdate(agent,actn,Rwd,μ,α)
-
-    if agent.state.name == "ξ"
-        μ ? SC=agentCtrller(agent.μ,α=α,β=β) : SC=agentCtrller(agent.ν,α=α,β=β)
-        Rwd += SC[2]
-        actn = actn, μ, SC[3], SC[4]
+    π = softMax([agent.state.Q.A1, agent.state.Q.A2], β = β1)
+    if π > rand()
+        actn = "A1"
+        agent_C.state.e.A1 = 1.0
+        agent_TV.state.e.A1 = 1.0
+    else
+        actn = "A2"
+        agent_C.state.e.A2 = 1.0
+        agent_TV.state.e.A2 = 1.0
     end
 
-    return agent, Rwd, actn, π
+    μ, Rwd = askEnviron("ξ", actn)
+    agentUpdate(agent_C, actn, μ, α, λ)
+    agentUpdate(agent_TV, actn, μ, 1.0, λ)
+    agent.state = rwdUpdate(agent.state, actn, Rwd, ηᵣ)
+    agent.state.T = transitionUpdate(agent.state.T, actn, μ, ηₜ)
+
+    if μ
+        stNm = "μ"
+        π1 = softMax([agent.μ.state.Q.A1, agent.μ.state.Q.A2], β = β2)
+        if π1 > rand()
+            actn1 = "A1"
+            agent_C.μ.state.e.A1 = 1.0
+            agent_TV.μ.state.e.A1 = 1.0
+            δ = agent.μ.state.R.A1
+        else
+            actn1 = "A2"
+            agent_C.μ.state.e.A2 = 1.0
+            agent_TV.μ.state.e.A2 = 1.0
+            δ = agent.μ.state.R.A2
+        end
+        μ1, Rwd1 = askEnviron(stNm, actn1)
+        replacetraceUpdate(agent_C, λ, α, Rwd1)
+        replacetraceUpdate(agent_TV, λ, 1.0, δ)
+        agent.μ.state = rwdUpdate(agent.μ.state, actn1, Rwd1, ηᵣ)
+        agent.μ.state.T = transitionUpdate(agent.μ.state.T, actn, ηₜ)
+    else
+        stNm = "ν"
+        π1 = softMax([agent.ν.state.Q.A1, agent.ν.state.Q.A2], β = β2)
+        if π1 > rand()
+            actn1 = "A1"
+            agent_C.ν.state.e.A1 = 1.0
+            agent_TV.ν.state.e.A1 = 1.0
+            δ = agent.ν.state.R.A1
+        else
+            actn1 = "A2"
+            agent_C.ν.state.e.A2 = 1.0
+            agent_TV.ν.state.e.A2 = 1.0
+            δ = agent.ν.state.R.A2
+        end
+        μ1, Rwd1 = askEnviron(stNm, actn1)
+        replacetraceUpdate(agent_C, λ, α, Rwd1)
+        replacetraceUpdate(agent_TV, λ, 1.0, δ)
+        agent.ν.state = rwdUpdate(agent.ν.state, actn1, Rwd1, ηᵣ)
+        agent.ν.state.T = transitionUpdate(agent.ν.state.T, actn, ηₜ)
+    end
+
+    actn = actn, μ, actn1, π1
+
+    return agent, Rwd1, actn, π, agent_C, agent_TV
 end
 
-## model based
+##########################################################
+## Miller
+function agentCtrller(agent::DecisionTree, α::T, β::T, ηₜ::T, ηᵣ::T, D::Array{T,1}) where T <: Float64
 
-function agentCtrller(agent::DecisionTree, M::Int64; α::T=0.5, β::T=5.0) where T<:Float64
+    π = softMax([D[1], D[2]], β = β)
 
-    π = softMax([agent.state.Q.A1, agent.state.Q.A2],β=β)
-    π >= rand() ? actn = "A1" : actn = "A2"
-
-    μ, Rwd = askEnviron(agent.state.name,actn)
-    agent.state = agentUpdate(agent,actn,Rwd,μ,α)
-
-    if agent.state.name == "ξ"
-        μ ? SC=agentCtrller(agent.μ,α=α,β=β) : SC=agentCtrller(agent.ν,α=α,β=β)
-        Rwd += SC[2]
-        actn = actn, μ, SC[3], SC[4]
-
-        for i=1:M   ## Random s and random a for tree-search/DYNA-Q
-            s_rv = rand()
-            if s_rv < 0.34
-                rand() > 0.5 ? a = "A1" : a = "A2"
-                agent.state = agentUpdate(agent,a,α)
-            elseif s_rv < 0.67
-                rand() > 0.5 ? a = "A1" : a = "A2"
-                agent.μ.state = agentUpdate(agent.μ,a,α)
-            else
-                rand() > 0.5 ? a = "A1" : a = "A2"
-                agent.ν.state = agentUpdate(agent.ν,a,α)
-            end
-        end
+    if π > rand()
+        actn = "A1"
+    else
+        actn = "A2"
     end
 
-    return agent, Rwd, actn, π
+    μ, Rwd = askEnviron("ξ", actn)
+    agentUpdate(agent, actn, μ)
+    agent.state.h = habitUpdate(agent.state.h, actn, α)
+    agent.state = rwdUpdate(agent.state, actn, Rwd, ηᵣ)
+    agent.state.T = transitionUpdate(agent.state.T, actn, μ, ηₜ)
+    if μ
+        π1 = softMax([D[3], D[4]], β = β)
+
+        if π1 > rand()
+            actn1 = "A1"
+        else
+            actn1 = "A2"
+        end
+        μ1, Rwd1 = askEnviron("μ", actn1)
+        actn1 == "A1" ? agent.μ.state.Q.A1 = agent.μ.state.R.A1 : agent.μ.state.Q.A2 = agent.μ.state.R.A2
+        agent.μ.state.h = habitUpdate(agent.μ.state.h, actn1, α)
+        agent.μ.state = rwdUpdate(agent.μ.state, actn1, Rwd1, ηᵣ)
+        agent.μ.state.T = transitionUpdate(agent.μ.state.T, actn1, ηₜ)
+
+    else
+        π1 = softMax([D[5], D[6]], β = β)
+
+        if π1 > rand()
+            actn1 = "A1"
+        else
+            actn1 = "A2"
+        end
+        μ1, Rwd1 = askEnviron("ν", actn1)
+        actn1 == "A1" ? agent.ν.state.Q.A1 = agent.ν.state.R.A1 : agent.ν.state.Q.A2 = agent.ν.state.R.A2
+        agent.ν.state.h = habitUpdate(agent.ν.state.h, actn1, α)
+        agent.ν.state = rwdUpdate(agent.ν.state, actn1, Rwd1, ηᵣ)
+        agent.ν.state.T = transitionUpdate(agent.ν.state.T, actn1, ηₜ)
+    end
+    actn = actn, μ, actn1, π1
+
+    return agent, Rwd1, actn, π
+
+end
+
+############################################################
+## Dezfouli
+function agentCtrller(agent::DecisionTree, α1::T, α2::T, β1::T, β2::T, λ::T, ηₜ::T, κ::T, prev_actns::Array, w::T) where T <: Float64
+
+    agent_V = deepcopy(agent)
+    agent_Q = deepcopy(agent)
+
+    π = softMax([agent.state.Q.A1, agent.state.Q.A2], κ, prev_actns[1], β = β1)
+    if π > rand()
+        actn = "A1"
+        agent_Q.state.e.A1 = 1.0
+    else
+        actn = "A2"
+        agent_Q.state.e.A2 = 1.0
+    end
+    μ, Rwd = askEnviron("ξ", actn)
+    agent_V = agentUpdate(agent_V, actn, μ)
+    agent_Q = agentUpdate(agent_Q, actn, μ, α1, λ)
+    agent.state.T = transitionUpdate(agent.state.T, actn, μ, ηₜ)
+    if μ
+        π1 = softMax([agent.μ.state.Q.A1, agent.μ.state.Q.A2], κ, prev_actns[2], β = β2)
+        if π1 > rand()
+            actn1 = "A1"
+            agent_Q.μ.state.e.A1 = 1.0
+        else
+            actn1 = "A2"
+            agent_Q.μ.state.e.A2 = 1.0
+        end
+        μ1, Rwd1 = askEnviron("μ", actn1)
+        actn1 == "A1" ? agent_V.μ.state.Q.A1 = Rwd1 : agent_V.μ.state.Q.A2 = Rwd1
+        replacetraceUpdate(agent_Q, λ, α2, Rwd1)
+        agent.μ.state.T = transitionUpdate(agent.μ.state.T, actn1, ηₜ)
+    else
+        π1 = softMax([agent.ν.state.Q.A1, agent.ν.state.Q.A2], κ, prev_actns[2], β = β2)
+        if π1 > rand()
+            actn1 = "A1"
+            agent_Q.ν.state.e.A1 = 1.0
+        else
+            actn1 = "A2"
+            agent_Q.ν.state.e.A2 = 1.0
+        end
+        μ1, Rwd1 = askEnviron("ν", actn1)
+        actn1 == "A1" ? agent_V.ν.state.Q.A1 = Rwd1 : agent_V.ν.state.Q.A2 = Rwd1
+        replacetraceUpdate(agent_Q, λ, α2, Rwd1)
+        agent.ν.state.T = transitionUpdate(agent.ν.state.T, actn1, ηₜ)
+    end
+
+    Vᵧ = [agent_V.state.Q.A1, agent_V.state.Q.A2, agent_V.μ.state.Q.A1, agent_V.μ.state.Q.A2, agent_V.ν.state.Q.A1, agent_V.ν.state.Q.A2]
+    Qₕ = [agent_Q.state.Q.A1, agent_Q.state.Q.A2, agent_Q.μ.state.Q.A1, agent_Q.μ.state.Q.A2, agent_Q.ν.state.Q.A1, agent_Q.ν.state.Q.A2]
+    V = w .* Vᵧ .+ (1 - w) .* Qₕ
+
+    agent.state.Q.A1, agent.state.Q.A2, agent.μ.state.Q.A1, agent.μ.state.Q.A2, agent.ν.state.Q.A1, agent.ν.state.Q.A2 = V[1], V[2], V[3], V[4], V[5], V[6]
+    agent.state.e.A1, agent.state.e.A2, agent.μ.state.e.A1, agent.μ.state.e.A2, agent.ν.state.e.A1, agent.ν.state.e.A2 = agent_Q.state.e.A1, agent_Q.state.e.A2, agent_Q.μ.state.e.A1, agent_Q.μ.state.e.A2, agent_Q.ν.state.e.A1, agent_Q.ν.state.e.A2
+
+    actn = actn, μ, actn1, π1
+
+    return agent, Rwd1, actn, π
 end
 
 ####### ASK THE DATA ###############
 
-## model based
+### DAW
+function agentCtrller(agent::DecisionTree, α::T, β1::T, β2::T, λ::T, ηₜ::T, ηᵣ::T, data::Array{Bool,1}) where T <: Float64
 
-function agentCtrller(agent::DecisionTree, data::Array{Bool,1}, M::Int64; α::T=0.5, β::T=5.0) where T<:Float64
+    agent_C = deepcopy(agent)
+    agent_TV = deepcopy(agent)
 
-    π = softMax([agent.state.Q.A1, agent.state.Q.A2],β=β)
-    data[1] ? actn = "A1" : actn = "A2"
-
-    μ, Rwd = askEnviron(agent.state.name,actn)
-    agent.state = agentUpdate(agent,actn,Rwd,μ,α)
-
-    if agent.state.name == "ξ"
-        μ ? SC=agentCtrller(agent.μ,data[3:4],α=α,β=β) : SC=agentCtrller(agent.ν,data[3:4],α=α,β=β)
-        Rwd += SC[2]
-        actn = actn, μ, SC[3], SC[4]
-
-        for i=1:M   ## Random s and random a for tree-search/DYNA-Q
-            s_rv = rand()
-            if s_rv < 0.34
-                rand() > 0.5 ? a = "A1" : a = "A2"
-                agent.state = agentUpdate(agent,a,α)
-            elseif s_rv < 0.67
-                rand() > 0.5 ? a = "A1" : a = "A2"
-                agent.μ.state = agentUpdate(agent.μ,a,α)
-            else
-                rand() > 0.5 ? a = "A1" : a = "A2"
-                agent.ν.state = agentUpdate(agent.ν,a,α)
-            end
-        end
+    π = softMax([agent.state.Q.A1, agent.state.Q.A2], β = β1)
+    if data[1]
+        actn = "A1"
+        agent_C.state.e.A1 = 1.0
+        agent_TV.state.e.A1 = 1.0
+    else
+        actn = "A2"
+        agent_C.state.e.A2 = 1.0
+        agent_TV.state.e.A2 = 1.0
     end
 
-    return agent, Rwd, actn, π
+    μ, Rwd = askEnviron("ξ", data[1:2])
+    agentUpdate(agent_C, actn, μ, α, λ)
+    agentUpdate(agent_TV, actn, μ, 1.0, λ)
+    agent.state = rwdUpdate(agent.state, actn, Rwd, ηᵣ)
+    agent.state.T = transitionUpdate(agent.state.T, actn, μ, ηₜ)
+
+    if μ
+        stNm = "μ"
+        π1 = softMax([agent.μ.state.Q.A1, agent.μ.state.Q.A2], β = β2)
+        if data[3]
+            actn1 = "A1"
+            agent_C.μ.state.e.A1 = 1.0
+            agent_TV.μ.state.e.A1 = 1.0
+            δ = agent.μ.state.R.A1
+        else
+            actn1 = "A2"
+            agent_C.μ.state.e.A2 = 1.0
+            agent_TV.μ.state.e.A2 = 1.0
+            δ = agent.μ.state.R.A2
+        end
+        μ1, Rwd1 = askEnviron(stNm, data[3:4])
+        replacetraceUpdate(agent_C, λ, α, Rwd1)
+        replacetraceUpdate(agent_TV, λ, 1.0, δ)
+        agent.μ.state = rwdUpdate(agent.μ.state, actn1, Rwd1, ηᵣ)
+        agent.μ.state.T = transitionUpdate(agent.μ.state.T, actn, ηₜ)
+    else
+        stNm = "ν"
+        π1 = softMax([agent.ν.state.Q.A1, agent.ν.state.Q.A2], β = β2)
+        if data[3]
+            actn1 = "A1"
+            agent_C.ν.state.e.A1 = 1.0
+            agent_TV.ν.state.e.A1 = 1.0
+            δ = agent.ν.state.R.A1
+        else
+            actn1 = "A2"
+            agent_C.ν.state.e.A2 = 1.0
+            agent_TV.ν.state.e.A2 = 1.0
+            δ = agent.ν.state.R.A2
+        end
+        μ1, Rwd1 = askEnviron(stNm, data[3:4])
+        replacetraceUpdate(agent_C, λ, α, Rwd1)
+        replacetraceUpdate(agent_TV, λ, 1.0, δ)
+        agent.ν.state = rwdUpdate(agent.ν.state, actn1, Rwd1, ηᵣ)
+        agent.ν.state.T = transitionUpdate(agent.ν.state.T, actn, ηₜ)
+    end
+
+    actn = actn, μ, actn1, π1
+
+    return agent, Rwd1, actn, π, agent_C, agent_TV
 end
 
-## model free
+##########################################################
 
-function agentCtrller(agent::DecisionTree, data::Array{Bool,1}; α::T=0.5, β::T=5.0) where T<:Float64
+## Miller
+function agentCtrller(agent::DecisionTree, α::T, β::T, ηₜ::T, ηᵣ::T, D::Array{T,1}, data::Array{Bool,1}) where T <: Float64
 
-    π = softMax([agent.state.Q.A1, agent.state.Q.A2], β=β)
 
-    data[1] ? actn = "A1" : actn = "A2"
+    π = softMax([D[1], D[2]], β = β)
 
-    μ, Rwd = askEnviron(agent.state.name,data[1:2])
-    agent.state = agentUpdate(agent,actn,Rwd,μ,α)
-
-    if agent.state.name == "ξ"
-        μ ? SC=agentCtrller(agent.μ,data[3:4],α=α,β=β) : SC=agentCtrller(agent.ν,data[3:4],α=α,β=β)
-        Rwd += SC[2]
-        actn = actn, μ, SC[3], SC[4]
+    if data[1]
+        actn = "A1"
+    else
+        actn = "A2"
     end
 
-    return agent, Rwd, actn, π
+    μ, Rwd = askEnviron("ξ", data[1:2])
+    agentUpdate(agent, actn, μ)
+    agent.state.h = habitUpdate(agent.state.h, actn, α)
+    agent.state = rwdUpdate(agent.state, actn, Rwd, ηᵣ)
+    agent.state.T = transitionUpdate(agent.state.T, actn, μ, ηₜ)
+    if μ
+        π1 = softMax([D[3], D[4]], β = β)
+
+        if data[3]
+            actn1 = "A1"
+        else
+            actn1 = "A2"
+        end
+        μ1, Rwd1 = askEnviron("μ", data[3:4])
+        actn1 == "A1" ? agent.μ.state.Q.A1 = agent.μ.state.R.A1 : agent.μ.state.Q.A2 = agent.μ.state.R.A2
+        agent.μ.state.h = habitUpdate(agent.μ.state.h, actn1, α)
+        agent.μ.state = rwdUpdate(agent.μ.state, actn1, Rwd1, ηᵣ)
+        agent.μ.state.T = transitionUpdate(agent.μ.state.T, actn1, ηₜ)
+
+    else
+        π1 = softMax([D[5], D[6]], β = β)
+
+        if data[3]
+            actn1 = "A1"
+        else
+            actn1 = "A2"
+        end
+        μ1, Rwd1 = askEnviron("ν", data[3:4])
+        actn1 == "A1" ? agent.ν.state.Q.A1 = agent.ν.state.R.A1 : agent.ν.state.Q.A2 = agent.ν.state.R.A2
+        agent.ν.state.h = habitUpdate(agent.ν.state.h, actn1, α)
+        agent.ν.state = rwdUpdate(agent.ν.state, actn1, Rwd1, ηᵣ)
+        agent.ν.state.T = transitionUpdate(agent.ν.state.T, actn1, ηₜ)
+    end
+    actn = actn, μ, actn1, π1
+
+    return agent, Rwd1, actn, π
+end
+
+
+#############################################################
+## Dezfouli
+function agentCtrller(agent::DecisionTree, α1::T, α2::T, β1::T, β2::T, λ::T, ηₜ::T, κ::T, prev_actns::Array{String,1}, w::T, data::Array{Bool,1}) where T <: Float64
+    agent_V = deepcopy(agent)
+    agent_Q = deepcopy(agent)
+
+    π = softMax([agent.state.Q.A1, agent.state.Q.A2], κ, prev_actns[1], β = β1,)
+    if data[1]
+        actn = "A1"
+        agent_Q.state.e.A1 = 1.0
+    else
+        actn = "A2"
+        agent_Q.state.e.A2 = 1.0
+    end
+    μ, Rwd = askEnviron("ξ", data[1:2])
+    agent_V = agentUpdate(agent_V, actn, μ)
+    agent_Q = agentUpdate(agent_Q, actn, μ, α1, λ)
+    agent.state.T = transitionUpdate(agent.state.T, actn, μ, ηₜ)
+    if μ
+        π1 = softMax([agent.μ.state.Q.A1, agent.μ.state.Q.A2], κ, prev_actns[2], β = β2)
+        if data[3]
+            actn1 = "A1"
+            agent_Q.μ.state.e.A1 = 1.0
+        else
+            actn1 = "A2"
+            agent_Q.μ.state.e.A2 = 1.0
+        end
+        μ1, Rwd1 = askEnviron("μ", data[3:4])
+        actn1 == "A1" ? agent_V.μ.state.Q.A1 = Rwd1 : agent_V.μ.state.Q.A2 = Rwd1
+        replacetraceUpdate(agent_Q, λ, α2, Rwd1)
+        agent.μ.state.T = transitionUpdate(agent.μ.state.T, actn1, ηₜ)
+    else
+        π1 = softMax([agent.ν.state.Q.A1, agent.ν.state.Q.A2], κ, prev_actns[2], β = β2)
+        if data[3]
+            actn1 = "A1"
+            agent_Q.ν.state.e.A1 = 1.0
+        else
+            actn1 = "A2"
+            agent_Q.ν.state.e.A2 = 1.0
+        end
+        μ1, Rwd1 = askEnviron("ν", data[3:4])
+        actn1 == "A1" ? agent_V.ν.state.Q.A1 = Rwd1 : agent_V.ν.state.Q.A2 = Rwd1
+        replacetraceUpdate(agent_Q, λ, α2, Rwd1)
+        agent.ν.state.T = transitionUpdate(agent.ν.state.T, actn1, ηₜ)
+    end
+
+    Vᵧ = [agent_V.state.Q.A1, agent_V.state.Q.A2, agent_V.μ.state.Q.A1, agent_V.μ.state.Q.A2, agent_V.ν.state.Q.A1, agent_V.ν.state.Q.A2]
+    Qₕ = [agent_Q.state.Q.A1, agent_Q.state.Q.A2, agent_Q.μ.state.Q.A1, agent_Q.μ.state.Q.A2, agent_Q.ν.state.Q.A1, agent_Q.ν.state.Q.A2]
+    V = w .* Vᵧ .+ (1 - w) .* Qₕ
+
+    agent.state.Q.A1, agent.state.Q.A2, agent.μ.state.Q.A1, agent.μ.state.Q.A2, agent.ν.state.Q.A1, agent.ν.state.Q.A2 = V[1], V[2], V[3], V[4], V[5], V[6]
+    agent.state.e.A1, agent.state.e.A2, agent.μ.state.e.A1, agent.μ.state.e.A2, agent.ν.state.e.A1, agent.ν.state.e.A2 = agent_Q.state.e.A1, agent_Q.state.e.A2, agent_Q.μ.state.e.A1, agent_Q.μ.state.e.A2, agent_Q.ν.state.e.A1, agent_Q.ν.state.e.A2
+
+    actn = actn, μ, actn1, π1
+
+    return agent, Rwd1, actn, π
 end

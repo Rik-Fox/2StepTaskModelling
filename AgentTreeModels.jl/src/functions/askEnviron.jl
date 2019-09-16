@@ -2,7 +2,7 @@ using Random
 
 function askEnviron(state::String, actn::String)
     if state == "ξ"
-        actn == "A1" ? (rand() < 0.7 ? μ = true : μ = false) : (rand() < 0.7 ? μ = false : μ = true)
+        actn == "A1" ? (rand() > 0.7 ? μ = false : μ = true) : (rand() > 0.7 ? μ = true : μ = false)
         R = 0.0
     elseif state == "μ"
         μ = Nothing()
