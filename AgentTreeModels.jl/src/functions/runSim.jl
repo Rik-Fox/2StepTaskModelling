@@ -2,26 +2,28 @@
 
 ####### DAW
 function runSim(n::Int64, α::T, β1::T, β2::T, λ::T, ηₜ::T, ηᵣ::T) where T <: Float64
-
+    ### init arrays for timeseries of all relevant values over epoch
     epoch_C = zeros(6, n)
     epoch_TV = zeros(6, n)
     epoch = zeros(6, n)
     epochT = zeros(6, n)
     epoch_R = zeros(6, n)
     epoch_e = zeros(6, n)
+    ### init arrays for relevant eviron/model data over epoch
     Rwds = zeros(n)
     p1 = zeros(n)
     p2 = zeros(n)
+    ### init agent
     agent = buildAgent(2)
     for i = 1:n
 
         X = agentCtrller(agent, α, β1, β2, λ, ηₜ, ηᵣ)
 
         Rwds[i], p1[i], p2[i] = X[2], X[4], X[3][4]
-
+        ####### Save values of all stes at the end of each trial
         epoch_C[:,i] = [X[5].state.Q.A1, X[5].state.Q.A2, X[5].μ.state.Q.A1, X[5].μ.state.Q.A2, X[5].ν.state.Q.A1, X[5].ν.state.Q.A2]
         epoch_TV[:,i] = [X[6].state.Q.A1, X[6].state.Q.A2, X[6].μ.state.Q.A1, X[6].μ.state.Q.A2, X[6].ν.state.Q.A1, X[6].ν.state.Q.A2]
-
+        ### update agent values using variance comparision arbiter X[1] = agent at t-1, X[5] = model free controller, X[6] = model based controller, takes the epoch data up to time t for empirical variance
         agent = compareVar(X[1],X[5],X[6],epoch_C[:,1:i],epoch_TV[:,1:i])
 
         epoch[:,i] = [agent.state.Q.A1, agent.state.Q.A2, agent.μ.state.Q.A1, agent.μ.state.Q.A2, agent.ν.state.Q.A1, agent.ν.state.Q.A2]
@@ -29,9 +31,10 @@ function runSim(n::Int64, α::T, β1::T, β2::T, λ::T, ηₜ::T, ηᵣ::T) wher
         epoch_R[:,i] = [agent.state.R.A1, agent.state.R.A2, agent.μ.state.R.A1, agent.μ.state.R.A2, agent.ν.state.R.A1, agent.ν.state.R.A2]
         epoch_e[:,i] = [agent.state.e.A1, agent.state.e.A2, agent.μ.state.e.A1, agent.μ.state.e.A2, agent.ν.state.e.A1, agent.ν.state.e.A2]
     end
-
+    ## returns agent, 1st tuple is used for creating or fitting data, second tuple is for plotting and model checking, final returned term is only used to return the apdaptive weighting of a model when applicable
     return agent, (Rwds, p1, p2), (epoch, epochT, epoch_R, epoch_e), Nothing()
 end
+#### hacky way around 2 methods with same input, NEEDS TO BE FIXED BEFORE USE
 
 # ####### Dezfouli
 # function runSim(n::Int64, α1::T, α2::T, β1::T, β2::T, λ::T, ηₜ::T, κ::T, w::T) where T <: Float64
@@ -49,6 +52,7 @@ end
 #     for i = 1:n
 #         X = agentCtrller(agent, α1, α2, β1, β2, λ, ηₜ, κ, prev_actn, w)
 #         p1[i], p2[i] = X[4], X[3][4]
+#           ## for action stickiness (κ)
 #         prev_actn = [X[3][1], X[3][3]]
 #
 #         epoch_Q[:,i] = [agent.state.Q.A1, agent.state.Q.A2, agent.μ.state.Q.A1, agent.μ.state.Q.A2, agent.ν.state.Q.A1, agent.ν.state.Q.A2]
@@ -91,11 +95,13 @@ function runSim(n::Int64, α::T, β1::T, β2::T, ηₜ::T, ηᵣ::T, wₒ::T, w�
         epoch_R[:,i] = [agent.state.R.A1, agent.state.R.A2, agent.μ.state.R.A1, agent.μ.state.R.A2, agent.ν.state.R.A1, agent.ν.state.R.A2]
         epoch_e[:,i] = [agent.state.e.A1, agent.state.e.A2, agent.μ.state.e.A1, agent.μ.state.e.A2, agent.ν.state.e.A1, agent.ν.state.e.A2]
         epoch_H[:,i] = [agent.state.h.A1, agent.state.h.A2, agent.μ.state.h.A1, agent.μ.state.h.A2, agent.ν.state.h.A1, agent.ν.state.h.A2]
-
+        ####### Arbiter
+        ### calc Var for each controller
         hσ = abs(sum(epoch_H[:,i] .- (sum(epoch_H[:,1:i-1], dims = 2) ./i)))
         gσ = sqrt(sum(π .*(epoch_R[:,i] .- sum(π .*epoch_R[:,i])).^2 ))
-
+        ## use varience to determine controller weighting
         w[i] = 1 / ( 1 + exp((wᵧ * gσ) - (wₕ * hσ) + wₒ) )
+        ## proportional update using calculated weighting which is turn turn used at t+1 to determine softmax policy
         D = w[i].*β1.*epoch_H[:,i] .+ (1-w[i]).*β2.*epoch_Q[:,i]
     end
 
@@ -136,6 +142,8 @@ function runSim(data::Array{Bool,2}, α::T, β1::T, β2::T, λ::T, ηₜ::T, η�
 
     return agent, (Rwds, p1, p2), (epoch, epochT, epoch_R, epoch_e), Nothing()
 end
+
+#### hacky way around 2 methods with same input, NEEDS TO BE FIXED BEFORE USE
 
 # ####### DB
 # function runSim(data::Array{Bool,2}, α1::T, α2::T, β1::T, β2::T, λ::T, ηₜ::T, κ::T, w::T) where T <: Float64

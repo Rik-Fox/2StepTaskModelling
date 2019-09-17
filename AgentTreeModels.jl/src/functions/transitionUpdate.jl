@@ -9,7 +9,7 @@ function transitionUpdate(T::Actions, actn::String, μ::Bool, α::Float64 )
     return T
 end
 
-# secondary states
+# secondary states - saving an operation with not checking for switching as not possible in this particular experimental envirnment
 function transitionUpdate(T::Actions, actn::String, α::Float64 )
     if actn == "A1"
         T.A1 = (1-α)*T.A1 + α

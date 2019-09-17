@@ -1,4 +1,5 @@
 function replacetraceUpdate(agent::DecisionTree, λ::T, α::T, δ::T) where T<:Float64
+    # if statements ensure only update sufficently large eligibilities
     # if agent.state.e.A1 >= λ^2
         agent.state.Q.A1 = (1-α*agent.state.e.A1)*agent.state.Q.A1 + α*δ*agent.state.e.A1
     # end
@@ -20,7 +21,7 @@ function replacetraceUpdate(agent::DecisionTree, λ::T, α::T, δ::T) where T<:F
         agent.ν.state.Q.A2 = (1-α*agent.ν.state.e.A2)*agent.ν.state.Q.A2 + α*δ*agent.ν.state.e.A2
     # end
     #####################
-
+    # decay eligibilities
     agent.state.e.A1 *= λ
     agent.state.e.A2 *= λ
 

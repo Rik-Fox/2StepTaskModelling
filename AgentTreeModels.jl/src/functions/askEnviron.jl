@@ -1,5 +1,5 @@
 using Random
-
+## simulate enivronment
 function askEnviron(state::String, actn::String)
     if state == "ξ"
         actn == "A1" ? (rand() > 0.7 ? μ = false : μ = true) : (rand() > 0.7 ? μ = true : μ = false)
@@ -15,6 +15,7 @@ function askEnviron(state::String, actn::String)
     return μ, R
 end
 
+## return enivronment values from data, more convient that rewriting whole controllors just for this small difference
 function askEnviron(state::String, data::Array{Bool,1})
     if state == "ξ"
         data[1] ? (data[2] ? μ = false : μ = true) : (data[2] ? μ = true : μ = false)

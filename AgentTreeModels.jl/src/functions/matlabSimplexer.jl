@@ -1,3 +1,6 @@
+#############################################################################################
+### didn't end up using but may do when looking for better optimisers and is generally useful
+
 struct MatlabSimplexer{T} <: Optim.Simplexer
     a::T
     b::T

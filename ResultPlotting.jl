@@ -17,6 +17,7 @@ dw = Daw[:,7]
 dz = Dez[:,9]
 ml = Mil[:,9]
 data = [dw dz ml]
+plot(data)
 daw_σ = sqrt((sum(dw .- mean(dw)).^2)/112)
 dez_σ = sqrt((sum(dz .- mean(dz)).^2)/112)
 mil_σ = sqrt((sum(ml .- mean(ml)).^2)/112)

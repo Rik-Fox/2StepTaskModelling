@@ -1,5 +1,3 @@
-########### DAW & Dezfouli
-
 ### root node update
 function agentUpdate(agent::DecisionTree, actn::String, μ::Bool, α::T, λ::T) where T <: Float64
 
@@ -14,7 +12,7 @@ function agentUpdate(agent::DecisionTree, actn::String, μ::Bool, α::T, λ::T) 
         q = s.T.A2
         s.e.A2 = 1.0
     end
-    # δ = r(s) + γ*(T(s,a)*Q(s,max action)) - Q_t+1
+    # δ = r(s) + γ*(T(s,a,s')*Q(s',max a')) - Q_t
     δ = (p * findmax([agent.μ.state.Q.A1, agent.μ.state.Q.A2])[1] + q * findmax([agent.ν.state.Q.A1, agent.ν.state.Q.A2])[1])
 
     replacetraceUpdate(agent, λ, α, δ)
